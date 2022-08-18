@@ -1,11 +1,8 @@
-import logo from './logo.svg';
-import './App.css';
-import Admin from './Screen/Admin/Admin';
+import "./App.css";
+import Admin from "./Screen/Admin/Admin";
 
 function App() {
-  return (
-    <Admin/>
-  );
+  return <Admin />;
 }
 
 export default App;

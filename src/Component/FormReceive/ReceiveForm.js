@@ -67,12 +67,16 @@ const fake_data = [
   },
 ];
 const ReceiveForm = () => {
-  const [data, setData] = useState(fake_data);
+  const [data, setData] = useState([]);
   const [selected, setSelected] = useState(null);
   const { register, handleSubmit } = useForm({
     defaultValues: data,
   });
-  const { register: registerItem, handleSubmit: handleSubmitItem } = useForm();
+  const {
+    register: registerItem,
+    handleSubmit: handleSubmitItem,
+    formState: { errors },
+  } = useForm();
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -88,25 +92,29 @@ const ReceiveForm = () => {
     setData(dataSubmit);
   };
   const addItem = (submitItem) => {
-    setData(data.items.push(submitItem));
-    console.log(data);
+    console.log(submitItem);
+    axios
+      .post("http://localhost:8080/api/receive/", JSON.stringify(submitItem))
+      .then((res) => console.log(res.data))
+      .catch((error) => {
+        console.log(error.data);
+      });
   };
 
-  // const getAllReceive = async () => {
-  //   try {
-  //     const response = await axios.get("http://localhost:8080/api/receive/");
-  //     if (response.data) {
-  //       setData(response.data);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const getAllReceive = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/receive/");
+      if (response.data) {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  // useEffect(() => {
-  //   getAllReceive();
-  //   console.log(data);
-  // }, []);
+  useEffect(() => {
+    getAllReceive();
+  }, []);
 
   return (
     <div className="receive-form">

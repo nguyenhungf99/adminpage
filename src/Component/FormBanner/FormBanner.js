@@ -38,11 +38,7 @@ const FormBanner = () => {
               <TbEdit className="banner-icon up" onClick={() => toggle(1)} />
             </div>
           </div>
-          <div
-            className={
-              selected === 1 ? `banner-title-form active` : "banner-title-form"
-            }
-          >
+          <div className={"banner-title-form"}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <label>Title</label>
               <input {...register("title")} placeholder="Title component" />

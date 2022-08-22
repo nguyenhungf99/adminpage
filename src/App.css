@@ -30,4 +30,12 @@ input[type="submit"],
   width: 100%;
   font-weight: 400;
   transition: 0.3s all;
+  cursor: pointer;
+}
+
+label {
+  font-size: 17px;
+}
+Button {
+  cursor: pointer;
 }

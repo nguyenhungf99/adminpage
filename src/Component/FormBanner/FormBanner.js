@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./FormBanner.css";
 import { useForm } from "react-hook-form";
-import { TbEdit } from "react-icons/tb";
 
 const fake_data = {
   title:
@@ -16,13 +15,6 @@ const FormBanner = () => {
     defaultValues: data,
   });
 
-  const [selected, setSelected] = useState(null);
-  const toggle = (i) => {
-    if (selected === i) {
-      return setSelected(null);
-    }
-    setSelected(i);
-  };
   const onSubmit = (dataSubmit) => {
     setData(dataSubmit);
   };
@@ -32,11 +24,7 @@ const FormBanner = () => {
       <div className="banner-content">
         <div className="banner-title">
           <div className="banner-title-header">
-            <p>Banner</p>
-            <div className="banner-icons">
-              <TbEdit style={{ color: "white" }} />
-              <TbEdit className="banner-icon up" onClick={() => toggle(1)} />
-            </div>
+            <h3>Banner</h3>
           </div>
           <div className={"banner-title-form"}>
             <form onSubmit={handleSubmit(onSubmit)}>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Admin.css";
 import ReceiveForm from "../../Component/FormReceive/ReceiveForm";
 import { RiDashboardLine } from "react-icons/ri";
-import { IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import {
   BiBarcode,
   BiBookBookmark,
@@ -28,6 +28,12 @@ const Admin = () => {
     setChecked(i);
   };
 
+  const [pageActive, setPageActive] = useState(null);
+  const toggleActive = (i, comp) => {
+    setPageActive(i);
+    setCom(comp);
+  };
+
   return (
     <div className="wrap">
       <div className="side-bar">
@@ -48,46 +54,85 @@ const Admin = () => {
               <RiDashboardLine></RiDashboardLine>
             </div>
             <div className="sidebar-item" onClick={() => toggleDrop(1)}>
-              <h3>Dashborad</h3>
+              <h3>Dashboard</h3>
             </div>
-            <IoIosArrowForward className="item-icon"></IoIosArrowForward>
+            {checked ? (
+              <IoIosArrowDown className="item-icon" />
+            ) : (
+              <IoIosArrowForward className="item-icon" />
+            )}
           </div>
 
           <ul
             className={checked === 1 ? `sidebar-title active` : `sidebar-title`}
           >
-            <li className="sidebar-row">
+            <li
+              className={
+                pageActive === "side_bar" ? "sidebar-row active" : "sidebar-row"
+              }
+              onClick={() => setCom()}
+            >
               <BiBarcode className="icon-re"></BiBarcode>
-              <h4 onClick={() => setCom()}>SideBar</h4>
+              <h4>SideBar</h4>
             </li>
 
-            <li className="sidebar-row">
+            <li
+              className={
+                pageActive === "banner" ? "sidebar-row active" : "sidebar-row"
+              }
+              onClick={() => toggleActive("banner", <FormBanner />)}
+            >
               <BiBookBookmark className="icon-re"></BiBookBookmark>
-              <h4 onClick={() => setCom(<FormBanner />)}>Banner</h4>
+              <h4>Banner</h4>
             </li>
 
-            <li className="sidebar-row">
+            <li
+              className={
+                pageActive === "about" ? "sidebar-row active" : "sidebar-row"
+              }
+              onClick={() => toggleActive("about", <FormAbout />)}
+            >
               <BiChip className="icon-re"></BiChip>
-              <h4 onClick={() => setCom(<FormAbout />)}>About</h4>
+              <h4>About</h4>
             </li>
 
-            <li className="sidebar-row">
+            <li
+              className={
+                pageActive === "receive" ? "sidebar-row active" : "sidebar-row"
+              }
+              onClick={() => toggleActive("receive", <ReceiveForm />)}
+            >
               <BiFoodMenu className="icon-re"></BiFoodMenu>
-              <h4 onClick={() => setCom(<ReceiveForm />)}>Receive</h4>
+              <h4>Receive</h4>
             </li>
 
-            <li className="sidebar-row">
+            <li
+              className={
+                pageActive === "campus" ? "sidebar-row active" : "sidebar-row"
+              }
+              onClick={() => toggleActive("campus", <FormCampus />)}
+            >
               <BiGrid className="icon-re"></BiGrid>
-              <h4 onClick={() => setCom(<FormCampus />)}>CamPus</h4>
+              <h4>CamPus</h4>
             </li>
-            <li className="sidebar-row">
+            <li
+              className={
+                pageActive === "admin" ? "sidebar-row active" : "sidebar-row"
+              }
+              onClick={() => toggleActive("admin", <FormAdmission />)}
+            >
               <BiDetail className="icon-re"></BiDetail>
-              <h4 onClick={() => setCom(<FormAdmission />)}>Admission</h4>
+              <h4>Admission</h4>
             </li>
 
-            <li className="sidebar-row">
+            <li
+              className={
+                pageActive === "common" ? "sidebar-row active" : "sidebar-row"
+              }
+              onClick={() => toggleActive("common", <FormCommon />)}
+            >
               <BiGrid className="icon-re"></BiGrid>
-              <h4 onClick={() => setCom(<FormCommon />)}>Common</h4>
+              <h4>Common</h4>
             </li>
           </ul>
         </div>

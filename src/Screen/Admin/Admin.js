@@ -3,6 +3,7 @@ import "./Admin.css";
 import ReceiveForm from "../../Component/FormReceive/ReceiveForm";
 import { RiDashboardLine } from "react-icons/ri";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
+import { MdPreview } from "react-icons/md";
 import {
   BiBarcode,
   BiBookBookmark,
@@ -16,7 +17,9 @@ import FormAdmission from "../../Component/FormAdmission/FormAdmission";
 import FormCampus from "../../Component/FormCampus/FormCampus";
 import FormAbout from "../../Component/FormAbout/FormAbout";
 import FormBanner from "../../Component/FormBanner/FormBanner";
-import FormSideBar from "../../Component/FormSidebar/FormSideBar";
+import FormSideBar from "../../Component/FormSidebar/FormSidebar";
+import FormReview from "../../Component/FormReview/FormReview";
+// import FormSideBar from "../../Component/FormSidebar/FormSideBar";
 
 const Admin = () => {
   const [com, setCom] = useState(<ReceiveForm />);
@@ -134,6 +137,16 @@ const Admin = () => {
             >
               <BiGrid className="icon-re"></BiGrid>
               <h4>Common</h4>
+            </li>
+
+            <li
+              className={
+                pageActive === "common" ? "sidebar-row active" : "sidebar-row"
+              }
+              onClick={() => toggleActive("review", <FormReview />)}
+            >
+              <MdPreview className="icon-re"></MdPreview>
+              <h4>Review</h4>
             </li>
           </ul>
         </div>

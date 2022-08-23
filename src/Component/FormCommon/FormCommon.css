@@ -8,8 +8,8 @@
 .common-content {
   width: 100%;
 }
-.common-title {
-}
+/* .common-title {
+} */
 .common-title-header {
   display: flex;
   font-weight: 600;

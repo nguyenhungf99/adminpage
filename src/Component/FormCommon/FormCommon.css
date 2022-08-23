@@ -8,6 +8,8 @@
 .common-content {
   width: 100%;
 }
+.common-title {
+}
 .common-title-header {
   display: flex;
   font-weight: 600;
@@ -19,16 +21,15 @@
   align-items: center;
   outline: none;
   width: 100%;
-  height: 50px;
-  padding: 0 25px;
+  min-height: 50px;
+  padding: 20px 30px;
   background-color: white;
   box-shadow: 0 0 49px 0 rgb(0 0 0 / 8%);
-  border-radius: 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.122);
 }
 .common-title-header p {
   font-style: normal;
-  font-weight: 600;
+  font-weight: 400;
 }
 .common-icons {
   display: flex;
@@ -39,18 +40,15 @@
 }
 .common-icon {
   cursor: pointer;
-  /* padding-left: 10px; */
 }
 .common-icons-down {
-  /* min-height: 130px; */
-  margin-top: 30px;
-  font-size: 20px;
-  height: 100%;
+  height: 25px;
 }
 .common-icon-down {
   font-size: 25px;
   cursor: pointer;
 }
+
 /* Form */
 .common-title-form {
   background-color: white;
@@ -86,10 +84,7 @@
   border-radius: 5px;
   margin-bottom: 5px;
 }
-.common-title {
-  margin-bottom: 1px;
-  padding-left: 50px;
-}
+
 .common-title-item {
   line-height: 1.5;
 }
@@ -131,7 +126,7 @@
   outline: none;
   width: 100%;
   min-height: 50px;
-  padding: 10px 25px;
+  padding: 20px 25px;
   background-color: white;
   border-bottom: solid 1px grey;
   box-shadow: 0 10px 10px 0 rgb(0 0 0 / 8%);
@@ -158,7 +153,6 @@
 
 .common-item-col {
   display: block;
-  width: 50%;
+  width: 40%;
   height: 100%;
-  overflow-wrap: break-worommon;
 }

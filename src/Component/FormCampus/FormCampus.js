@@ -220,7 +220,7 @@ const FormCampus = () => {
         <div className="campus-title">
           <div className="campus-title-header">
             <div className="campus-title-item">
-              <p>Title: {title.title}</p>
+              Title: <p>{title.title}</p>
             </div>
             <div className="campus-icons-down">
               <TbEdit className="campus-icon-down" onClick={() => toggle(1)} />

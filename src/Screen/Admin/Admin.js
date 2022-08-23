@@ -16,7 +16,7 @@ import FormAdmission from "../../Component/FormAdmission/FormAdmission";
 import FormCampus from "../../Component/FormCampus/FormCampus";
 import FormAbout from "../../Component/FormAbout/FormAbout";
 import FormBanner from "../../Component/FormBanner/FormBanner";
-import FormSidebar from "../../Component/FormSidebar/FormSidebar";
+import FormSideBar from "../../Component/FormSidebar/FormSideBar";
 
 const Admin = () => {
   const [com, setCom] = useState(<ReceiveForm />);
@@ -71,7 +71,7 @@ const Admin = () => {
               className={
                 pageActive === "side_bar" ? "sidebar-row active" : "sidebar-row"
               }
-              onClick={() => toggleActive("Sidebar", <FormSidebar />)}
+              onClick={() => toggleActive("Sidebar", <FormSideBar />)}
             >
               <BiBarcode className="icon-re"></BiBarcode>
               <h4>SideBar</h4>

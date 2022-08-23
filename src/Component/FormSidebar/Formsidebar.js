@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./FormSidebar.css";
+import "./FormSideBar.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
 import { MdOutlineDelete } from "react-icons/md";
@@ -37,7 +37,7 @@ const fake_road_items = [
   { img: "https://devplus.asia/assets/images/devplus/6.png" },
 ];
 
-const FormSidebar = () => {
+const FormSideBar = () => {
   const [items, setItems] = useState([]);
   const [item, setItem] = useState(null);
   const [title, setTitle] = useState(fake_content);
@@ -274,4 +274,4 @@ const FormSidebar = () => {
     </div>
   );
 };
-export default FormSidebar;
+export default FormSideBar;

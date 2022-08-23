@@ -23,7 +23,6 @@
   padding: 25px 30px;
   background-color: white;
   box-shadow: 0 0 49px 0 rgb(0 0 0 / 8%);
-  border-radius: 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.122);
 }
 .ab-title-header p {
@@ -84,7 +83,6 @@
   margin-bottom: 5px;
 }
 .ab-title {
-  margin-bottom: 1px;
 }
 .ab-title-item {
   line-height: 1.5;
@@ -112,7 +110,7 @@
   background-color: white;
   max-height: 1000px;
   padding-right: 10px;
-  padding-left: 100px;
+  padding-left: 50px;
   transition: all 0.3s ease-in-out;
 }
 .ab-item-header {

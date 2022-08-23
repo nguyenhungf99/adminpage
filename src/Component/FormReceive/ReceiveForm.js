@@ -206,7 +206,10 @@ const ReceiveForm = () => {
       <div className="receive-content">
         <div className="receive-title">
           <div className="receive-title-header">
-            <p>Title: {title.title}</p>
+            <div className="receive-title-item">
+              Title:<p>{title.title}</p>
+            </div>
+
             <div className="receive-icons">
               <TbEdit style={{ color: "white" }} />
               <TbEdit className="receive-icon up" onClick={() => toggle(1)} />

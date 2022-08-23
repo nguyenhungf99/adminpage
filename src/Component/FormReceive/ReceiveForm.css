@@ -23,8 +23,16 @@
   padding: 0 25px;
   background-color: white;
   box-shadow: 0 0 49px 0 rgb(0 0 0 / 8%);
-  border-radius: 5px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.122);
+}
+.receive-title-header p {
+  font-style: normal;
+  font-weight: 400;
+  margin-left: 10px;
+}
+.receive-title-item {
+  line-height: 1.5;
+  display: flex;
 }
 .receive-icons {
   display: flex;

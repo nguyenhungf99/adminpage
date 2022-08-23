@@ -176,9 +176,7 @@ const FormCommon = () => {
   useEffect(() => {
     if (item) {
       setValueItemEdit("content", item.content);
-      setValueItemEdit("video", item.video);
       setValueItemEdit("detail", item.detail);
-      setValueItemEdit("title", item.title);
     }
   }, [item]);
 
@@ -193,9 +191,10 @@ const FormCommon = () => {
         <Box sx={style}>
           {item ? (
             <form onSubmit={handleSubmitItemEdit(editItem)}>
-              <label>Title</label>
-              <input {...registerItemEdit("name")} placeholder="content" />
-              <input {...registerItemEdit("detail")} placeholder="detail" />
+              <label>Content</label>
+              <input {...registerItemEdit("content")} placeholder="content" />
+              <label>Detail</label>
+              <textarea {...registerItemEdit("detail")} placeholder="detail" />
               <input type="submit" value="Edit Item" />
             </form>
           ) : (
@@ -230,8 +229,8 @@ const FormCommon = () => {
         <div className="common-title">
           <div className="common-title-header">
             <div className="common-title-item">
-              <p>Title: {title.title}</p>
-              <p>Video: {title.video}</p>
+              Title: <p>{title.title}</p>
+              Video url: <p>{title.video}</p>
             </div>
             <div className="common-icons-down">
               <TbEdit className="common-icon-down" onClick={() => toggle(1)} />
@@ -258,7 +257,7 @@ const FormCommon = () => {
           }
         >
           <div className="common-item-content">
-            <p className="common-content-col">Content </p>
+            <p className="common-content-col">Content</p>
             <p className="common-content-col">Detail </p>
             <div className="common-content-action" onClick={handleOpen}>
               Add new

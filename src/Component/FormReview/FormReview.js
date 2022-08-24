@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./FormSidebar.css";
+import "./FormReview.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
 import { MdOutlineDelete } from "react-icons/md";
@@ -25,19 +25,33 @@ const style = {
   p: 4,
 };
 const fake_content = {
-  title:
-    "Devplus's mission is filling the gap between school and corporate, reduce in-house training cost and effort for IT companies.",
+  title: "What alumni review",
 };
 const fake_road_items = [
-  { img: "https://devplus.asia/assets/images/devplus/1.png" },
-  { img: "https://devplus.asia/assets/images/devplus/2.png" },
-  { img: "https://devplus.asia/assets/images/devplus/3.png" },
-  { img: "https://devplus.asia/assets/images/devplus/4.png" },
-  { img: "https://devplus.asia/assets/images/devplus/5.png" },
-  { img: "https://devplus.asia/assets/images/devplus/6.png" },
+  {
+    author: "Quynh Nga",
+    img: "https://devplus.edu.vn/assets/images/devplus/person2.png",
+    job: "Menber DevPlus ++",
+    title:
+      "I learnt a lot of knowledge from experienced seniors of Dev plus. They help me to understand the procedure in running a real project. Additionally, taking part in activities such as workshops promote my soft skills.",
+  },
+  {
+    author: "Thatsadaphone Inthapakdy",
+    img: "https://devplus.edu.vn/assets/images/devplus/person3.png",
+    job: "Menber DevPlus ++",
+    title:
+      "Dev plus help me to re-train about knowledge with technology, experience how to do the real project with senior developers by testing their current project, and share more experience with them. enjoy more events and workshops.",
+  },
+  {
+    author: "Tien Thinh",
+    img: "https://devplus.edu.vn/assets/images/devplus/person1.png",
+    job: "Menber DevPlus ++",
+    title:
+      "This is an awesome programme which supports me too much in enhancing my skills and knowledge to become a developer. I feel very lucky because of joining Devplus.",
+  },
 ];
 
-const FormSideBar = () => {
+const FormReview = () => {
   const [items, setItems] = useState([]);
   const [item, setItem] = useState(null);
   const [title, setTitle] = useState(fake_content);
@@ -163,12 +177,14 @@ const FormSideBar = () => {
     if (item) {
       setValueItemEdit("img", item.img);
       setValueItemEdit("detail", item.detail);
+      setValueItemEdit("author", item.author);
+      setValueItemEdit("job", item.job);
       setValueItemEdit("title", item.title);
     }
   }, [item]);
 
   return (
-    <div className="fsidebar-form">
+    <div className="review-form">
       <Modal
         open={open}
         onClose={handleClose}
@@ -178,14 +194,23 @@ const FormSideBar = () => {
         <Box sx={style}>
           {item ? (
             <form onSubmit={handleSubmitItemEdit(editItem)}>
+              <label>Author</label>
+              <input {...registerItemEdit("author")} placeholder="author" />
+              <label>Image</label>
+              <input {...registerItemEdit("img")} placeholder="img" />
+              <label>Job</label>
+              <input {...registerItemEdit("job")} placeholder="job" />
               <label>Title</label>
-              <input {...registerItemEdit("img")} placeholder="url img" />
-              <input type="submit" value="Edit Image" />
+              <textarea {...registerItemEdit("title")} placeholder="title" />
+              <input type="submit" value="Edit Item" />
             </form>
           ) : (
             <form onSubmit={handleSubmitItem(addItem)}>
-              <input {...registerItem("img")} placeholder="url img" />
-              <input type="submit" value="Add Image" />
+              <input {...registerItem("author")} placeholder="author" />
+              <input {...registerItem("img")} placeholder="url image" />
+              <input {...registerItem("job")} placeholder="job" />
+              <textarea {...registerItem("title")} placeholder="title" />
+              <input type="submit" value="Add Item" />
             </form>
           )}
         </Box>
@@ -209,24 +234,19 @@ const FormSideBar = () => {
           <Button onClick={() => handleCloseMess("agr")}>Agree</Button>
         </DialogActions>
       </Dialog>
-      <div className="fsidebar-content">
-        <div className="fsidebar-title">
-          <div className="fsidebar-title-header">
-            <div className="fsidebar-title-item">
+      <div className="review-content">
+        <div className="review-title">
+          <div className="review-title-header">
+            <div className="review-title-item">
               Title: <p>{title.title}</p>
             </div>
-            <div className="fsidebar-icons-down">
-              <TbEdit
-                className="fsidebar-icon-down"
-                onClick={() => toggle(1)}
-              />
+            <div className="review-icons-down">
+              <TbEdit className="review-icon-down" onClick={() => toggle(1)} />
             </div>
           </div>
           <div
             className={
-              selected === 1
-                ? `fsidebar-title-form active`
-                : "fsidebar-title-form"
+              selected === 1 ? `review-title-form active` : "review-title-form"
             }
           >
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -239,25 +259,29 @@ const FormSideBar = () => {
 
         <div
           className={
-            selected === 3
-              ? `fsidebar-items-wrap active`
-              : "fsidebar-items-wrap"
+            selected === 3 ? `review-items-wrap active` : "review-items-wrap"
           }
         >
-          <div className="fsidebar-item-content">
-            <p className="fsidebar-content-col">Url Image </p>
-            <div className="fsidebar-content-action" onClick={handleOpen}>
+          <div className="review-item-content">
+            <p className="review-content-col col1">Author </p>
+            <p className="review-content-col col2">Url Image </p>
+            <p className="review-content-col col3">Job </p>
+            <p className="review-content-col col4">Title </p>
+            <div className="review-content-action" onClick={handleOpen}>
               Add new
             </div>
           </div>
           {Array.isArray(items)
             ? items.map((item, i) => (
-                <div className="fsidebar-item" key={i}>
-                  <div className={"fsidebar-item-header"}>
-                    <div className="fsidebar-item-col">{item.img}</div>
-                    <div className="fsidebar-icons">
+                <div className="review-item" key={i}>
+                  <div className={"review-item-header"}>
+                    <div className="review-item-col col1">{item.author}</div>
+                    <div className="review-item-col col2">{item.img}</div>
+                    <div className="review-item-col col3">{item.job}</div>
+                    <div className="review-item-col col4">{item.title}</div>
+                    <div className="review-icons">
                       <TbEdit
-                        className="fsidebar-icon up"
+                        className="review-icon up"
                         onClick={() => handleOpen(i)}
                       />
                       <MdOutlineDelete
@@ -274,4 +298,4 @@ const FormSideBar = () => {
     </div>
   );
 };
-export default FormSideBar;
+export default FormReview;

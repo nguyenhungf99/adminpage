@@ -12,6 +12,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const style = {
   position: "absolute",
@@ -45,6 +47,17 @@ const ReceiveForm = () => {
     handleSubmit: handleSubmitItem,
     resetField: resetFieldItem,
   } = useForm();
+
+  const notify = (i) =>
+    toast.info(i, {
+      position: "top-right",
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
 
   const [open, setOpen] = useState(false);
   const handleOpen = (index) => {
@@ -90,6 +103,7 @@ const ReceiveForm = () => {
       );
       if (response.data) {
         getAllReceive();
+        notify("Item update!");
       }
     } catch (error) {
       console.log(error);
@@ -107,6 +121,7 @@ const ReceiveForm = () => {
       );
       if (response.data) {
         getAllReceive();
+        notify("Edit success!");
       }
     } catch (error) {
       console.log(error);
@@ -122,6 +137,7 @@ const ReceiveForm = () => {
       );
       if (response.data) {
         getAllReceive();
+        notify("Delete success!");
       }
     } catch (error) {
       console.log(error);
@@ -157,6 +173,7 @@ const ReceiveForm = () => {
 
   return (
     <div className="receive-form">
+      <ToastContainer />
       <Modal
         open={open}
         onClose={handleClose}

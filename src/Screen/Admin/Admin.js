@@ -17,9 +17,8 @@ import FormAdmission from "../../Component/FormAdmission/FormAdmission";
 import FormCampus from "../../Component/FormCampus/FormCampus";
 import FormAbout from "../../Component/FormAbout/FormAbout";
 import FormBanner from "../../Component/FormBanner/FormBanner";
-import FormSideBar from "../../Component/FormSidebar/FormSidebar";
+import FormSideBar from "../../Component/FormSideBar/FormSideBar";
 import FormReview from "../../Component/FormReview/FormReview";
-// import FormSideBar from "../../Component/FormSidebar/FormSideBar";
 
 const Admin = () => {
   const [com, setCom] = useState(null);

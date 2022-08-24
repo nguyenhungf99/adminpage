@@ -22,7 +22,7 @@ import FormReview from "../../Component/FormReview/FormReview";
 // import FormSideBar from "../../Component/FormSidebar/FormSideBar";
 
 const Admin = () => {
-  const [com, setCom] = useState(<ReceiveForm />);
+  const [com, setCom] = useState(null);
 
   const [checked, setChecked] = useState(null);
   const toggleDrop = (i) => {

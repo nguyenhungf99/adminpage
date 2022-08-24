@@ -177,6 +177,8 @@ const FormReview = () => {
     if (item) {
       setValueItemEdit("img", item.img);
       setValueItemEdit("detail", item.detail);
+      setValueItemEdit("author", item.author);
+      setValueItemEdit("job", item.job);
       setValueItemEdit("title", item.title);
     }
   }, [item]);
@@ -199,7 +201,7 @@ const FormReview = () => {
               <label>Job</label>
               <input {...registerItemEdit("job")} placeholder="job" />
               <label>Title</label>
-              <input {...registerItemEdit("title")} placeholder="title" />
+              <textarea {...registerItemEdit("title")} placeholder="title" />
               <input type="submit" value="Edit Item" />
             </form>
           ) : (
@@ -207,7 +209,7 @@ const FormReview = () => {
               <input {...registerItem("author")} placeholder="author" />
               <input {...registerItem("img")} placeholder="url image" />
               <input {...registerItem("job")} placeholder="job" />
-              <input {...registerItem("title")} placeholder="title" />
+              <textarea {...registerItem("title")} placeholder="title" />
               <input type="submit" value="Add Item" />
             </form>
           )}

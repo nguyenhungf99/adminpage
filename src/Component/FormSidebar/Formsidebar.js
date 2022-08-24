@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import "./FormSidebar.css";
+import "./FormSideBar.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
+import { FaPlusCircle } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -24,28 +25,18 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-const fake_content = {
-  title:
-    "Devplus's mission is filling the gap between school and corporate, reduce in-house training cost and effort for IT companies.",
-};
-const fake_road_items = [
-  { img: "https://devplus.asia/assets/images/devplus/1.png" },
-  { img: "https://devplus.asia/assets/images/devplus/2.png" },
-  { img: "https://devplus.asia/assets/images/devplus/3.png" },
-  { img: "https://devplus.asia/assets/images/devplus/4.png" },
-  { img: "https://devplus.asia/assets/images/devplus/5.png" },
-  { img: "https://devplus.asia/assets/images/devplus/6.png" },
-];
 
 const FormSideBar = () => {
-  const [items, setItems] = useState([]);
+  const [data, setData] = useState({});
   const [item, setItem] = useState(null);
-  const [title, setTitle] = useState(fake_content);
+  const [itemIndex, setItemIndex] = useState(null);
   const [selected, setSelected] = useState(null);
-
-  const { register, handleSubmit, setValue } = useForm({
-    defaultValues: title,
-  });
+  const { register, handleSubmit, setValue } = useForm();
+  const {
+    register: registerMap,
+    handleSubmit: handleSubmitMap,
+    setValue: setValueMap,
+  } = useForm();
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,
@@ -60,19 +51,29 @@ const FormSideBar = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = (index) => {
     if (Number.isInteger(index)) {
-      setItem(items.at(index));
+      setItem(data.images.at(index));
+      setItemIndex(index);
     }
     setOpen(true);
   };
   const handleClose = () => {
     setItem(null);
+    setItemIndex(null);
     setOpen(false);
+  };
+  const [openMap, setOpenMap] = useState(false);
+  const handleOpenMap = () => {
+    setOpenMap(true);
+  };
+  const handleCloseMap = () => {
+    setOpenMap(false);
   };
 
   const [openMess, setOpenMess] = useState(false);
   const handleOpenMess = (index) => {
     if (Number.isInteger(index)) {
-      setItem(items.at(index));
+      setItem(data.images.at(index));
+      setItemIndex(index);
       setOpenMess(true);
     }
   };
@@ -89,81 +90,82 @@ const FormSideBar = () => {
     }
     setSelected(i);
   };
+
   const onSubmit = (dataSubmit) => {
-    setTitle(dataSubmit);
+    let dataTemp = { ...data };
+    dataTemp.text = dataSubmit.text;
+    postApi(dataTemp);
+  };
+  const onSubmitMap = (dataSubmit) => {
+    let dataTemp = { ...data };
+    dataTemp.map = dataSubmit.map;
+    postApi(dataTemp);
   };
 
-  const addItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.post(
-    //     "https://api-devplus.herokuapp.com/api/receive",
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    resetFieldItem("img");
-    resetFieldItem("detail");
-    resetFieldItem("title");
+  const addItem = (submitItem) => {
+    let dataTemp = { ...data };
+    dataTemp.images.push(submitItem);
+    postApi(dataTemp);
+    resetFieldItem("url");
     setOpen(false);
   };
-  const editItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.put(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`,
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
-    setItem(null);
+  const editItem = (submitItem) => {
+    let dataTemp = { ...data };
+    dataTemp.images[itemIndex] = submitItem;
+    postApi(dataTemp);
+    resetFieldItem("url");
     setOpen(false);
   };
-  const deleteItem = async () => {
-    // try {
-    //   const response = await axios.delete(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+  const deleteItem = () => {
+    let dataTemp = { ...data };
+    dataTemp.images.splice(itemIndex);
+    postApi(dataTemp);
+    resetFieldItem("url");
+    setOpen(false);
+  };
+  const postApi = async (submit) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/admin/sidebar/edit",
+        submit
+      );
+      if (response.data) {
+        getAllAbout();
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
     setItem(null);
+    setItemIndex(null);
     setOpen(false);
+    setOpenMap(false);
   };
 
   const getAllAbout = async () => {
-    setItems(fake_road_items);
-    setTitle(fake_content);
-    // try {
-    //   const response = await axios.get(
-    //     "https://api-devplus.herokuapp.com/api/receive"
-    //   );
-    //   if (response.data) {
-    //     setItems(response.data);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/admin/sidebar/info/"
+      );
+      if (response.data) {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   useEffect(() => {
     getAllAbout();
   }, []);
   useEffect(() => {
+    if (data !== {}) {
+      setValue("text", data.text);
+      setValueMap("map", data.map);
+    }
+  }, [data]);
+  useEffect(() => {
     if (item) {
-      setValueItemEdit("img", item.img);
-      setValueItemEdit("detail", item.detail);
-      setValueItemEdit("title", item.title);
+      setValueItemEdit("url", item.url);
     }
   }, [item]);
 
@@ -179,17 +181,33 @@ const FormSideBar = () => {
           {item ? (
             <form onSubmit={handleSubmitItemEdit(editItem)}>
               <label>Title</label>
-              <input {...registerItemEdit("img")} placeholder="url img" />
+              <input {...registerItemEdit("url")} placeholder="url img" />
               <input type="submit" value="Edit Image" />
             </form>
           ) : (
             <form onSubmit={handleSubmitItem(addItem)}>
-              <input {...registerItem("img")} placeholder="url img" />
+              <input {...registerItem("url")} placeholder="url img" />
               <input type="submit" value="Add Image" />
             </form>
           )}
         </Box>
       </Modal>
+
+      <Modal
+        open={openMap}
+        onClose={handleCloseMap}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <form onSubmit={handleSubmitMap(onSubmitMap)}>
+            <label>Image</label>
+            <input {...registerMap("map")} placeholder="Map" />
+            <input type="submit" value="Edit Image" />
+          </form>
+        </Box>
+      </Modal>
+
       <Dialog
         open={openMess}
         onClose={handleCloseMess}
@@ -197,7 +215,7 @@ const FormSideBar = () => {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Do you want delet this item?"}
+          {"Do you want delete this item?"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -210,10 +228,11 @@ const FormSideBar = () => {
         </DialogActions>
       </Dialog>
       <div className="fsidebar-content">
+        <h2 style={{ "font-weight": "500" }}>Text header</h2>
         <div className="fsidebar-title">
           <div className="fsidebar-title-header">
             <div className="fsidebar-title-item">
-              Title: <p>{title.title}</p>
+              <p>{data ? data.text : null}</p>
             </div>
             <div className="fsidebar-icons-down">
               <TbEdit
@@ -231,44 +250,46 @@ const FormSideBar = () => {
           >
             <form onSubmit={handleSubmit(onSubmit)}>
               <label>Title</label>
-              <input {...register("title")} placeholder="Title component" />
+              <input {...register("text")} placeholder="Title component" />
               <input type="submit" value="submit" />
             </form>
           </div>
         </div>
-
-        <div
-          className={
-            selected === 3
-              ? `fsidebar-items-wrap active`
-              : "fsidebar-items-wrap"
-          }
-        >
-          <div className="fsidebar-item-content">
-            <p className="fsidebar-content-col">Url Image </p>
-            <div className="fsidebar-content-action" onClick={handleOpen}>
-              Add new
-            </div>
-          </div>
-          {Array.isArray(items)
-            ? items.map((item, i) => (
-                <div className="fsidebar-item" key={i}>
-                  <div className={"fsidebar-item-header"}>
-                    <div className="fsidebar-item-col">{item.img}</div>
-                    <div className="fsidebar-icons">
-                      <TbEdit
-                        className="fsidebar-icon up"
-                        onClick={() => handleOpen(i)}
-                      />
-                      <MdOutlineDelete
-                        style={{ color: "red", cursor: "pointer" }}
-                        onClick={() => handleOpenMess(i)}
-                      />
+        <h2 style={{ "font-weight": "500" }}>Item images</h2>
+        <div className="fsidebar-items-container">
+          <div className="fsidebar-items-wrap">
+            {Array.isArray(data.images)
+              ? data.images.map((item, i) => (
+                  <div className="fsidebar-item" key={i}>
+                    <div className="fsidebar-item-header">
+                      <img src={item.url} alt="st"></img>
+                      <div className="fsidebar-icons">
+                        <TbEdit
+                          className="fsidebar-icon up"
+                          onClick={() => handleOpen(i)}
+                        />
+                        <MdOutlineDelete
+                          className="fsidebar-icon det"
+                          onClick={() => handleOpenMess(i)}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
-            : null}
+                ))
+              : null}
+            <div className="fsidebar-items-add" onClick={handleOpen}>
+              <FaPlusCircle className="fsidebar-icon-add"></FaPlusCircle>
+            </div>
+          </div>
+        </div>
+        <h2 style={{ "font-weight": "500" }}>Map image</h2>
+        <div className="fsidebar-map-container">
+          <div className="fsidebar-map-header">
+            <img src={data.map} alt="st"></img>
+            <div className="fsidebar-icons-map">
+              <TbEdit className="fsidebar-icon-map" onClick={handleOpenMap} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

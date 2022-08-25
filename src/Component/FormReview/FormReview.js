@@ -3,6 +3,7 @@ import "./FormReview.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
 import { MdOutlineDelete } from "react-icons/md";
+import { GoPlus } from "react-icons/go";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
@@ -23,9 +24,6 @@ const style = {
   minWidth: 500,
   boxShadow: 24,
   p: 4,
-};
-const fake_content = {
-  title: "What alumni review",
 };
 const fake_road_items = [
   {
@@ -54,12 +52,9 @@ const fake_road_items = [
 const FormReview = () => {
   const [items, setItems] = useState([]);
   const [item, setItem] = useState(null);
-  const [title, setTitle] = useState(fake_content);
   const [selected, setSelected] = useState(null);
 
-  const { register, handleSubmit, setValue } = useForm({
-    defaultValues: title,
-  });
+  const { register, handleSubmit, setValue } = useForm({});
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,
@@ -70,6 +65,21 @@ const FormReview = () => {
     handleSubmit: handleSubmitItem,
     resetField: resetFieldItem,
   } = useForm();
+
+  // upload file
+  const handleOpenWidget = (index) => {
+    var myWidget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: "images-devplus-dp03",
+        uploadPreset: "e4zymksz",
+      },
+      (error, result) => {
+        if (!error && result && result.event === "success") {
+        }
+      }
+    );
+    myWidget.open();
+  };
 
   const [open, setOpen] = useState(false);
   const handleOpen = (index) => {
@@ -102,9 +112,6 @@ const FormReview = () => {
       return setSelected(null);
     }
     setSelected(i);
-  };
-  const onSubmit = (dataSubmit) => {
-    setTitle(dataSubmit);
   };
 
   const addItem = async (submitItem) => {
@@ -158,7 +165,7 @@ const FormReview = () => {
 
   const getAllAbout = async () => {
     setItems(fake_road_items);
-    setTitle(fake_content);
+
     // try {
     //   const response = await axios.get(
     //     "https://api-devplus.herokuapp.com/api/receive"
@@ -196,20 +203,32 @@ const FormReview = () => {
             <form onSubmit={handleSubmitItemEdit(editItem)}>
               <label>Author</label>
               <input {...registerItemEdit("author")} placeholder="author" />
-              <label>Image</label>
-              <input {...registerItemEdit("img")} placeholder="img" />
               <label>Job</label>
               <input {...registerItemEdit("job")} placeholder="job" />
+              <label>Image</label>
+              <div className="rv-edit-img">
+                <TbEdit
+                  className="rv-icon-edit"
+                  onClick={() => handleOpenWidget()}
+                />
+                <img src={item.img}></img>
+              </div>
               <label>Title</label>
               <textarea {...registerItemEdit("title")} placeholder="title" />
               <input type="submit" value="Edit Item" />
             </form>
           ) : (
             <form onSubmit={handleSubmitItem(addItem)}>
+              <label>Author</label>
               <input {...registerItem("author")} placeholder="author" />
-              <input {...registerItem("img")} placeholder="url image" />
+              <label>Job</label>
               <input {...registerItem("job")} placeholder="job" />
+              <label>Title</label>
               <textarea {...registerItem("title")} placeholder="title" />
+              <label>Image</label>
+              <div className="rv-add-img" onClick={() => handleOpenWidget()}>
+                <GoPlus className="rv-icon-add" />
+              </div>
               <input type="submit" value="Add Item" />
             </form>
           )}
@@ -235,28 +254,6 @@ const FormReview = () => {
         </DialogActions>
       </Dialog>
       <div className="review-content">
-        <div className="review-title">
-          <div className="review-title-header">
-            <div className="review-title-item">
-              Title: <p>{title.title}</p>
-            </div>
-            <div className="review-icons-down">
-              <TbEdit className="review-icon-down" onClick={() => toggle(1)} />
-            </div>
-          </div>
-          <div
-            className={
-              selected === 1 ? `review-title-form active` : "review-title-form"
-            }
-          >
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <label>Title</label>
-              <input {...register("title")} placeholder="Title component" />
-              <input type="submit" value="submit" />
-            </form>
-          </div>
-        </div>
-
         <div
           className={
             selected === 3 ? `review-items-wrap active` : "review-items-wrap"
@@ -264,7 +261,7 @@ const FormReview = () => {
         >
           <div className="review-item-content">
             <p className="review-content-col col1">Author </p>
-            <p className="review-content-col col2">Url Image </p>
+            <p className="review-content-col col2">Image </p>
             <p className="review-content-col col3">Job </p>
             <p className="review-content-col col4">Title </p>
             <div className="review-content-action" onClick={handleOpen}>
@@ -276,7 +273,9 @@ const FormReview = () => {
                 <div className="review-item" key={i}>
                   <div className={"review-item-header"}>
                     <div className="review-item-col col1">{item.author}</div>
-                    <div className="review-item-col col2">{item.img}</div>
+                    <div className="review-item-col col2">
+                      <img src={item.img}></img>
+                    </div>
                     <div className="review-item-col col3">{item.job}</div>
                     <div className="review-item-col col4">{item.title}</div>
                     <div className="review-icons">

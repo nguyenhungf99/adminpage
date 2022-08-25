@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import "./FormSideBar.css";
+import "./formSidebar.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
 import { FaPlusCircle } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -13,66 +11,55 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  border: "1px solid #fff",
-  minWidth: 500,
-  boxShadow: 24,
-  p: 4,
-};
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const FormSideBar = () => {
   const [data, setData] = useState({});
-  const [item, setItem] = useState(null);
   const [itemIndex, setItemIndex] = useState(null);
   const [selected, setSelected] = useState(null);
   const { register, handleSubmit, setValue } = useForm();
-  const {
-    register: registerMap,
-    handleSubmit: handleSubmitMap,
-    setValue: setValueMap,
-  } = useForm();
-  const {
-    register: registerItemEdit,
-    handleSubmit: handleSubmitItemEdit,
-    setValue: setValueItemEdit,
-  } = useForm();
-  const {
-    register: registerItem,
-    handleSubmit: handleSubmitItem,
-    resetField: resetFieldItem,
-  } = useForm();
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = (index) => {
-    if (Number.isInteger(index)) {
-      setItem(data.images.at(index));
-      setItemIndex(index);
+  const handleOpenWidget = (index) => {
+    var myWidget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: "images-devplus-dp03",
+        uploadPreset: "e4zymksz",
+      },
+      (error, result) => {
+        if (!error && result && result.event === "success") {
+          if (Number.isInteger(index)) {
+            editItem(result.info.url, index);
+          } else if (index === "map") {
+            onSubmitMap(result.info.url);
+          } else addItem(result.info.url);
+        }
+      }
+    );
+    myWidget.open();
+  };
+
+  const toggle = (i) => {
+    if (selected === i) {
+      return setSelected(null);
     }
-    setOpen(true);
+    setSelected(i);
   };
-  const handleClose = () => {
-    setItem(null);
-    setItemIndex(null);
-    setOpen(false);
-  };
-  const [openMap, setOpenMap] = useState(false);
-  const handleOpenMap = () => {
-    setOpenMap(true);
-  };
-  const handleCloseMap = () => {
-    setOpenMap(false);
-  };
+
+  const notify = (i, time) =>
+    toast.info(i, {
+      position: "top-right",
+      autoClose: time,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
 
   const [openMess, setOpenMess] = useState(false);
   const handleOpenMess = (index) => {
     if (Number.isInteger(index)) {
-      setItem(data.images.at(index));
       setItemIndex(index);
       setOpenMess(true);
     }
@@ -84,46 +71,35 @@ const FormSideBar = () => {
     setOpenMess(false);
   };
 
-  const toggle = (i) => {
-    if (selected === i) {
-      return setSelected(null);
-    }
-    setSelected(i);
-  };
-
   const onSubmit = (dataSubmit) => {
     let dataTemp = { ...data };
     dataTemp.text = dataSubmit.text;
-    postApi(dataTemp);
+    postApi(dataTemp, "Change success!");
   };
-  const onSubmitMap = (dataSubmit) => {
-    let dataTemp = { ...data };
-    dataTemp.map = dataSubmit.map;
-    postApi(dataTemp);
-  };
-
   const addItem = (submitItem) => {
+    let obj = { url: submitItem };
     let dataTemp = { ...data };
-    dataTemp.images.push(submitItem);
-    postApi(dataTemp);
-    resetFieldItem("url");
-    setOpen(false);
+    dataTemp.images.push(obj);
+    postApi(dataTemp, "Add item success!");
   };
-  const editItem = (submitItem) => {
+  const editItem = (submitItem, index) => {
+    let obj = { url: submitItem };
     let dataTemp = { ...data };
-    dataTemp.images[itemIndex] = submitItem;
-    postApi(dataTemp);
-    resetFieldItem("url");
-    setOpen(false);
+    dataTemp.images[index] = obj;
+    console.log(dataTemp);
+    postApi(dataTemp, "Edit success!");
   };
   const deleteItem = () => {
     let dataTemp = { ...data };
-    dataTemp.images.splice(itemIndex);
-    postApi(dataTemp);
-    resetFieldItem("url");
-    setOpen(false);
+    dataTemp.images.splice(itemIndex, 1);
+    postApi(dataTemp, "Delete success!");
   };
-  const postApi = async (submit) => {
+  const onSubmitMap = (dataSubmit) => {
+    let dataTemp = { ...data };
+    dataTemp.map = dataSubmit;
+    postApi(dataTemp, "Update map image success!");
+  };
+  const postApi = async (submit, alert) => {
     try {
       const response = await axios.post(
         "http://localhost:8000/api/admin/sidebar/edit",
@@ -131,15 +107,13 @@ const FormSideBar = () => {
       );
       if (response.data) {
         getAllAbout();
+        notify(alert, 1000);
       }
     } catch (error) {
       console.log(error);
     }
-
-    setItem(null);
+    toggle(0);
     setItemIndex(null);
-    setOpen(false);
-    setOpenMap(false);
   };
 
   const getAllAbout = async () => {
@@ -154,60 +128,18 @@ const FormSideBar = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getAllAbout();
   }, []);
   useEffect(() => {
     if (data !== {}) {
       setValue("text", data.text);
-      setValueMap("map", data.map);
     }
   }, [data]);
-  useEffect(() => {
-    if (item) {
-      setValueItemEdit("url", item.url);
-    }
-  }, [item]);
 
   return (
     <div className="fsidebar-form">
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          {item ? (
-            <form onSubmit={handleSubmitItemEdit(editItem)}>
-              <label>Title</label>
-              <input {...registerItemEdit("url")} placeholder="url img" />
-              <input type="submit" value="Edit Image" />
-            </form>
-          ) : (
-            <form onSubmit={handleSubmitItem(addItem)}>
-              <input {...registerItem("url")} placeholder="url img" />
-              <input type="submit" value="Add Image" />
-            </form>
-          )}
-        </Box>
-      </Modal>
-
-      <Modal
-        open={openMap}
-        onClose={handleCloseMap}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <form onSubmit={handleSubmitMap(onSubmitMap)}>
-            <label>Image</label>
-            <input {...registerMap("map")} placeholder="Map" />
-            <input type="submit" value="Edit Image" />
-          </form>
-        </Box>
-      </Modal>
-
       <Dialog
         open={openMess}
         onClose={handleCloseMess}
@@ -228,7 +160,7 @@ const FormSideBar = () => {
         </DialogActions>
       </Dialog>
       <div className="fsidebar-content">
-        <h2 style={{ "font-weight": "500" }}>Text header</h2>
+        <h2 style={{ fontWeight: "500" }}>Text header</h2>
         <div className="fsidebar-title">
           <div className="fsidebar-title-header">
             <div className="fsidebar-title-item">
@@ -255,7 +187,7 @@ const FormSideBar = () => {
             </form>
           </div>
         </div>
-        <h2 style={{ "font-weight": "500" }}>Item images</h2>
+        <h2 style={{ fontWeight: "500" }}>Item images</h2>
         <div className="fsidebar-items-container">
           <div className="fsidebar-items-wrap">
             {Array.isArray(data.images)
@@ -266,7 +198,7 @@ const FormSideBar = () => {
                       <div className="fsidebar-icons">
                         <TbEdit
                           className="fsidebar-icon up"
-                          onClick={() => handleOpen(i)}
+                          onClick={() => handleOpenWidget(i)}
                         />
                         <MdOutlineDelete
                           className="fsidebar-icon det"
@@ -277,17 +209,23 @@ const FormSideBar = () => {
                   </div>
                 ))
               : null}
-            <div className="fsidebar-items-add" onClick={handleOpen}>
+            <div
+              className="fsidebar-items-add"
+              onClick={() => handleOpenWidget(null)}
+            >
               <FaPlusCircle className="fsidebar-icon-add"></FaPlusCircle>
             </div>
           </div>
         </div>
-        <h2 style={{ "font-weight": "500" }}>Map image</h2>
+        <h2 style={{ fontWeight: "500" }}>Map image</h2>
         <div className="fsidebar-map-container">
           <div className="fsidebar-map-header">
             <img src={data.map} alt="st"></img>
             <div className="fsidebar-icons-map">
-              <TbEdit className="fsidebar-icon-map" onClick={handleOpenMap} />
+              <TbEdit
+                className="fsidebar-icon-map"
+                onClick={() => handleOpenWidget("map")}
+              />
             </div>
           </div>
         </div>

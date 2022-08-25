@@ -13,7 +13,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
-
+import { toast } from "react-toastify";
 const style = {
   position: "absolute",
   top: "50%",
@@ -25,36 +25,25 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-const fake_road_items = [
-  {
-    author: "Quynh Nga",
-    img: "https://devplus.edu.vn/assets/images/devplus/person2.png",
-    job: "Menber DevPlus ++",
-    title:
-      "I learnt a lot of knowledge from experienced seniors of Dev plus. They help me to understand the procedure in running a real project. Additionally, taking part in activities such as workshops promote my soft skills.",
-  },
-  {
-    author: "Thatsadaphone Inthapakdy",
-    img: "https://devplus.edu.vn/assets/images/devplus/person3.png",
-    job: "Menber DevPlus ++",
-    title:
-      "Dev plus help me to re-train about knowledge with technology, experience how to do the real project with senior developers by testing their current project, and share more experience with them. enjoy more events and workshops.",
-  },
-  {
-    author: "Tien Thinh",
-    img: "https://devplus.edu.vn/assets/images/devplus/person1.png",
-    job: "Menber DevPlus ++",
-    title:
-      "This is an awesome programme which supports me too much in enhancing my skills and knowledge to become a developer. I feel very lucky because of joining Devplus.",
-  },
-];
 
 const FormReview = () => {
+  //toastifi setting
+  const notify = (i, time) =>
+    toast.info(i, {
+      position: "top-right",
+      autoClose: time,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
   const [items, setItems] = useState([]);
   const [item, setItem] = useState(null);
-  const [selected, setSelected] = useState(null);
+  const [imageSelected, setImageSelected] = useState();
 
-  const { register, handleSubmit, setValue } = useForm({});
+  // form setup
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,
@@ -64,10 +53,11 @@ const FormReview = () => {
     register: registerItem,
     handleSubmit: handleSubmitItem,
     resetField: resetFieldItem,
+    setValue: setValueItem,
   } = useForm();
 
   // upload file
-  const handleOpenWidget = (index) => {
+  const handleOpenWidget = () => {
     var myWidget = window.cloudinary.createUploadWidget(
       {
         cloudName: "images-devplus-dp03",
@@ -75,6 +65,8 @@ const FormReview = () => {
       },
       (error, result) => {
         if (!error && result && result.event === "success") {
+          setImageSelected(result.info.url);
+          setValueItem("image", result.info.url);
         }
       }
     );
@@ -85,12 +77,18 @@ const FormReview = () => {
   const handleOpen = (index) => {
     if (Number.isInteger(index)) {
       setItem(items.at(index));
+      setImageSelected(items.at(index).image);
     }
     setOpen(true);
   };
   const handleClose = () => {
     setItem(null);
+    setImageSelected(null);
     setOpen(false);
+    resetFieldItem("image");
+    resetFieldItem("author");
+    resetFieldItem("job");
+    resetFieldItem("title");
   };
 
   const [openMess, setOpenMess] = useState(false);
@@ -107,88 +105,90 @@ const FormReview = () => {
     setOpenMess(false);
   };
 
-  const toggle = (i) => {
-    if (selected === i) {
-      return setSelected(null);
-    }
-    setSelected(i);
-  };
-
   const addItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.post(
-    //     "https://api-devplus.herokuapp.com/api/receive",
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    resetFieldItem("img");
-    resetFieldItem("detail");
+    console.log(submitItem);
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/admin/review/create",
+        submitItem
+      );
+      if (response.data) {
+        getAllAbout();
+        notify(alert, 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    resetFieldItem("image");
+    resetFieldItem("author");
+    resetFieldItem("job");
     resetFieldItem("title");
+    setImageSelected(null);
     setOpen(false);
   };
   const editItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.put(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`,
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/api/admin/review/edit/${item._id}`,
+        submitItem
+      );
+      if (response.data) {
+        getAllAbout();
+        notify("update success!", 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
     setItem(null);
+    setImageSelected(null);
     setOpen(false);
   };
   const deleteItem = async () => {
-    // try {
-    //   const response = await axios.delete(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/api/admin/review/delete/${item._id}`
+      );
+      if (response.data) {
+        getAllAbout();
+        notify("Delete success!", 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
     setItem(null);
     setOpen(false);
   };
 
   const getAllAbout = async () => {
-    setItems(fake_road_items);
-
-    // try {
-    //   const response = await axios.get(
-    //     "https://api-devplus.herokuapp.com/api/receive"
-    //   );
-    //   if (response.data) {
-    //     setItems(response.data);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/admin/review/infoAll"
+      );
+      if (response.data) {
+        setItems(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   useEffect(() => {
     getAllAbout();
   }, []);
+
   useEffect(() => {
     if (item) {
-      setValueItemEdit("img", item.img);
-      setValueItemEdit("detail", item.detail);
       setValueItemEdit("author", item.author);
       setValueItemEdit("job", item.job);
       setValueItemEdit("title", item.title);
     }
   }, [item]);
+  useEffect(() => {
+    if (imageSelected) {
+      setValueItemEdit("image", imageSelected);
+    }
+  }, [imageSelected]);
 
   return (
     <div className="review-form">
@@ -198,42 +198,67 @@ const FormReview = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box className="review-box-modal" sx={style}>
+          {/* Form input of edit and add item */}
           {item ? (
             <form onSubmit={handleSubmitItemEdit(editItem)}>
               <label>Author</label>
               <input {...registerItemEdit("author")} placeholder="author" />
               <label>Job</label>
               <input {...registerItemEdit("job")} placeholder="job" />
-              <label>Image</label>
-              <div className="rv-edit-img">
-                <TbEdit
-                  className="rv-icon-edit"
-                  onClick={() => handleOpenWidget()}
-                />
-                <img src={item.img}></img>
-              </div>
               <label>Title</label>
-              <textarea {...registerItemEdit("title")} placeholder="title" />
+              <textarea
+                {...registerItemEdit("title")}
+                placeholder="title here"
+              />
+              <label>Image</label>
+              <input
+                style={{ display: "none" }}
+                {...registerItemEdit("image")}
+                placeholder="image"
+              />
+              <div
+                className="rv-edit-img"
+                style={
+                  imageSelected
+                    ? { background: `url(${imageSelected}) center/cover` }
+                    : { background: `url(${item.image}) center/cover` }
+                }
+                onClick={() => handleOpenWidget()}
+              >
+                <TbEdit className="rv-icon-add" />
+              </div>
+
               <input type="submit" value="Edit Item" />
             </form>
           ) : (
             <form onSubmit={handleSubmitItem(addItem)}>
-              <label>Author</label>
               <input {...registerItem("author")} placeholder="author" />
-              <label>Job</label>
               <input {...registerItem("job")} placeholder="job" />
-              <label>Title</label>
               <textarea {...registerItem("title")} placeholder="title" />
               <label>Image</label>
-              <div className="rv-add-img" onClick={() => handleOpenWidget()}>
-                <GoPlus className="rv-icon-add" />
+              <input
+                style={{ display: "none" }}
+                {...registerItem("image")}
+                placeholder="image"
+              />
+              <div
+                className={imageSelected ? "rv-edit-img" : "rv-add-img"}
+                style={{ background: `url(${imageSelected}) center/cover` }}
+                onClick={() => handleOpenWidget()}
+              >
+                {imageSelected ? (
+                  <TbEdit className="rv-icon-add" />
+                ) : (
+                  <GoPlus className="rv-icon-add" />
+                )}
               </div>
               <input type="submit" value="Add Item" />
             </form>
           )}
         </Box>
       </Modal>
+      {/* Confirm dialog */}
       <Dialog
         open={openMess}
         onClose={handleCloseMess}
@@ -254,11 +279,7 @@ const FormReview = () => {
         </DialogActions>
       </Dialog>
       <div className="review-content">
-        <div
-          className={
-            selected === 3 ? `review-items-wrap active` : "review-items-wrap"
-          }
-        >
+        <div className={"review-items-wrap"}>
           <div className="review-item-content">
             <p className="review-content-col col1">Author </p>
             <p className="review-content-col col2">Image </p>
@@ -274,7 +295,7 @@ const FormReview = () => {
                   <div className={"review-item-header"}>
                     <div className="review-item-col col1">{item.author}</div>
                     <div className="review-item-col col2">
-                      <img src={item.img}></img>
+                      <img src={item.image} alt=""></img>
                     </div>
                     <div className="review-item-col col3">{item.job}</div>
                     <div className="review-item-col col4">{item.title}</div>

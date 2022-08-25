@@ -12,6 +12,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const style = {
   position: "absolute",
@@ -24,29 +25,25 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-const fake_content = {
-  title:
-    "The Fact: Skilled labour shortage for software companies but full of freshers and low level juniors",
-  content:
-    "Our responsibility is filling the gap between the quality of graduate students and the quality of engineers. Devplus will help reducing the cost of re-training and accelerating the skill-up progress of students and freshers.",
-};
-const fake_road_items = [
-  { name: "Apply devplus" },
-  { name: "Testing and Interview" },
-  { name: "1st plus (+) campus" },
-  { name: "1st plus (+) campus" },
-  { name: "1st plus (+) campus" },
-];
 
 const FormAbout = () => {
-  const [items, setItems] = useState([]);
+  const notify = (i, time) =>
+    toast.info(i, {
+      position: "top-right",
+      autoClose: time,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  const [data, setData] = useState([]);
   const [item, setItem] = useState(null);
-  const [title, setTitle] = useState(fake_content);
+  const [itemIndex, setItemIndex] = useState(null);
   const [selected, setSelected] = useState(null);
 
-  const { register, handleSubmit, setValue } = useForm({
-    defaultValues: title,
-  });
+  const { register, handleSubmit, setValue } = useForm();
+
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,
@@ -61,7 +58,8 @@ const FormAbout = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = (index) => {
     if (Number.isInteger(index)) {
-      setItem(items.at(index));
+      setItem(data.items.at(index));
+      setItemIndex(index);
     }
     setOpen(true);
   };
@@ -73,7 +71,7 @@ const FormAbout = () => {
   const [openMess, setOpenMess] = useState(false);
   const handleOpenMess = (index) => {
     if (Number.isInteger(index)) {
-      setItem(items.at(index));
+      setItemIndex(index);
       setOpenMess(true);
     }
   };
@@ -91,82 +89,74 @@ const FormAbout = () => {
     setSelected(i);
   };
   const onSubmit = (dataSubmit) => {
-    setTitle(dataSubmit);
+    let dataTemp = { ...data };
+    dataTemp.title = dataSubmit.title;
+    dataTemp.content = dataSubmit.content;
+    postApi(dataTemp, "Change success!");
   };
 
-  const addItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.post(
-    //     "https://api-devplus.herokuapp.com/api/receive",
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    resetFieldItem("img");
-    resetFieldItem("detail");
-    resetFieldItem("title");
+  const addItem = (submitItem) => {
+    let dataTemp = { ...data };
+    dataTemp.items.push(submitItem);
+    postApi(dataTemp, "Add item success!");
+  };
+  const editItem = (submitItem) => {
+    let dataTemp = { ...data };
+    dataTemp.items[itemIndex] = submitItem;
+    postApi(dataTemp, "Edit success!");
+  };
+  const deleteItem = () => {
+    let dataTemp = { ...data };
+    dataTemp.items.splice(itemIndex, 1);
+    postApi(dataTemp, "Delete success!");
+  };
+
+  const postApi = async (submit, alert) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/admin/about/edit",
+        submit
+      );
+      if (response.data) {
+        getAllAbout();
+        notify(alert, 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    toggle(null);
     setOpen(false);
-  };
-  const editItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.put(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`,
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
     setItem(null);
-    setOpen(false);
-  };
-  const deleteItem = async () => {
-    // try {
-    //   const response = await axios.delete(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
-    setItem(null);
-    setOpen(false);
+    resetFieldItem("item");
   };
 
   const getAllAbout = async () => {
-    setItems(fake_road_items);
-    setTitle(fake_content);
-    // try {
-    //   const response = await axios.get(
-    //     "https://api-devplus.herokuapp.com/api/receive"
-    //   );
-    //   if (response.data) {
-    //     setItems(response.data);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/admin/about/info/"
+      );
+      if (response.data) {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   useEffect(() => {
     getAllAbout();
   }, []);
   useEffect(() => {
     if (item) {
-      setValueItemEdit("img", item.img);
-      setValueItemEdit("detail", item.detail);
-      setValueItemEdit("title", item.title);
+      setValueItemEdit("item", item.item);
     }
   }, [item]);
+  useEffect(() => {
+    if (data != {}) {
+      setValue("content", data.content);
+      setValue("title", data.title);
+    }
+  }, [data]);
 
   return (
     <div className="ab-form">
@@ -180,12 +170,12 @@ const FormAbout = () => {
           {item ? (
             <form onSubmit={handleSubmitItemEdit(editItem)}>
               <label>Title</label>
-              <input {...registerItemEdit("name")} placeholder="Item name" />
+              <input {...registerItemEdit("item")} placeholder="Item name" />
               <input type="submit" value="Edit item" />
             </form>
           ) : (
             <form onSubmit={handleSubmitItem(addItem)}>
-              <input {...registerItem("name")} placeholder="Item name" />
+              <input {...registerItem("item")} placeholder="Item name" />
               <input type="submit" value="Add item" />
             </form>
           )}
@@ -214,8 +204,8 @@ const FormAbout = () => {
         <div className="ab-title">
           <div className="ab-title-header">
             <div className="ab-title-item">
-              Title: <p>{title.title}</p>
-              Content: <p>{title.content}</p>
+              Title: <p>{data.title}</p>
+              Content: <p>{data.content}</p>
             </div>
             <div className="ab-icons-down">
               <TbEdit className="ab-icon-down" onClick={() => toggle(1)} />
@@ -245,11 +235,11 @@ const FormAbout = () => {
               Add new
             </div>
           </div>
-          {Array.isArray(items)
-            ? items.map((item, i) => (
+          {Array.isArray(data.items)
+            ? data.items.map((item, i) => (
                 <div className="ab-item" key={i}>
                   <div className={"ab-item-header"}>
-                    <div className="ab-item-col">{item.name}</div>
+                    <div className="ab-item-col">{item.item}</div>
                     <div className="ab-icons">
                       <TbEdit
                         className="ab-icon up"

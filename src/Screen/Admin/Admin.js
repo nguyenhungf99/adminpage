@@ -140,7 +140,7 @@ const Admin = () => {
 
             <li
               className={
-                pageActive === "common" ? "sidebar-row active" : "sidebar-row"
+                pageActive === "review" ? "sidebar-row active" : "sidebar-row"
               }
               onClick={() => toggleActive("review", <FormReview />)}
             >

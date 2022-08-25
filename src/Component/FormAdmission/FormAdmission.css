@@ -10,20 +10,30 @@
 .adm-title {
   margin-bottom: 5px;
 }
+.adm-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.adm-header .header-icon {
+  margin-left: 10px;
+  font-size: 25px;
+  cursor: pointer;
+}
+.adm-header .header-icon:hover {
+  color: rgb(57, 57, 216);
+}
+
 .adm-title-header {
   display: flex;
-  font-weight: 600;
+  flex-direction: column;
   font-size: 18px;
   color: #111111;
   font-family: inherit;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
   border-bottom: solid 1px gray;
   outline: none;
   width: 100%;
-  height: 65px;
-  padding: 0 25px;
+  padding: 20px 25px;
   background-color: white;
   box-shadow: 0 0 49px 0 rgb(0 0 0 / 8%);
 }
@@ -41,11 +51,42 @@
 /* Form */
 .adm-title-form {
   background-color: white;
-  max-height: 500px;
-  padding: 14px 40px;
+  max-height: 0px;
+  overflow: hidden;
   border-bottom: 1px solid grey;
   box-shadow: 0 0 40px 0 rgb(0 0 0 / 8%);
+  transition: all 0.3s ease-in-out;
 }
 .adm-title-form textarea {
-  min-height: 100px;
+  height: 100px;
+}
+.adm-title-form.active {
+  padding: 20px;
+  max-height: 400px;
+  transition: all 0.3s ease-in-out;
+}
+
+.adm-img-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 30px 0px;
+}
+.adm-img-header {
+  position: relative;
+}
+.adm-img-header img {
+  height: 400px;
+  border: 2px solid black;
+}
+.adm-icons-img {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  color: rgb(233, 223, 223);
+  font-size: 30px;
+  cursor: pointer;
+}
+.adm-icons-img:hover {
+  color: black;
 }

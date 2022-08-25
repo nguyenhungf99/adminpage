@@ -2,19 +2,13 @@ import { useEffect, useState } from "react";
 import "./FormAdmission.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
+import { toast } from "react-toastify";
+import axios from "axios";
 
-const fake_data = {
-  title: "Admission for 2021",
-  detail:
-    "Disclaimer: This position is expected to start around Feb 2022 and continue through the entire Summer term. We ask for a minimum of 12 weeks, full-time, for most internships. Please consider before submitting an application. Devplus aims to provide students the chance to work with our clients and awesome mentors to level up your programing skillset in the RIGHT path. With your education and experience, you will be able to take on real-world challenges from day one.",
-  bgImg: "https://devplus.edu.vn/assets/images/devplus/Admission_for_2021.png",
-};
 const FormAdmission = () => {
-  const [data, setData] = useState(fake_data);
+  const [data, setData] = useState({});
   const [open, setOpen] = useState(false);
-  const { register, handleSubmit } = useForm({
-    defaultValues: data,
-  });
+  const { register, handleSubmit, setValue } = useForm();
   const handleOpenWidget = () => {
     var myWidget = window.cloudinary.createUploadWidget(
       {
@@ -30,6 +24,17 @@ const FormAdmission = () => {
     myWidget.open();
   };
 
+  const notify = (i, time) =>
+    toast.info(i, {
+      position: "top-right",
+      autoClose: time,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
   const toggle = () => {
     setOpen(!open);
   };
@@ -38,17 +43,54 @@ const FormAdmission = () => {
     let dataTemp = { ...data };
     dataTemp.title = dataSubmit.title;
     dataTemp.detail = dataSubmit.detail;
-    setData(dataTemp);
+    postApi(dataTemp, "Update text success!");
     toggle();
   };
   const onSubmitBgImg = (url) => {
     let dataTemp = { ...data };
-    dataTemp.bgImg = url;
-    setData(dataTemp);
+    dataTemp.image = url;
+    postApi(dataTemp, "background update!");
+  };
+
+  const postApi = async (submit, alert) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/admin/admission/edit",
+        submit
+      );
+      if (response.data) {
+        getAllAbout();
+        notify(alert, 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    toggle(0);
+  };
+
+  const getAllAbout = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/api/admin/admission/info/"
+      );
+      if (response.data) {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    console.log(data);
+    getAllAbout();
+  }, []);
+
+  //Set form input when get data
+  useEffect(() => {
+    if (data !== {}) {
+      setValue("title", data.title);
+      setValue("detail", data.detail);
+    }
   }, [data]);
 
   return (
@@ -82,7 +124,7 @@ const FormAdmission = () => {
           <hr></hr>
           <div className="adm-img-container">
             <div className="adm-img-header">
-              <img src={data.bgImg} alt="st"></img>
+              <img src={data.image} alt="st"></img>
               <div className="adm-icons-img">
                 <TbEdit
                   className="adm-icon-img"

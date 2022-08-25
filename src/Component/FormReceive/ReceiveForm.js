@@ -33,7 +33,6 @@ const ReceiveForm = () => {
   const [item, setItem] = useState(null);
   const [selected, setSelected] = useState(null);
 
-  const { register, handleSubmit } = useForm({});
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,

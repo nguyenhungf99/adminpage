@@ -3,6 +3,7 @@ import "./ReceiveForm.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
 import { MdOutlineDelete } from "react-icons/md";
+import { GoPlus } from "react-icons/go";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
@@ -26,17 +27,13 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-const fake_title = { title: "What an engineer after Devplus will must have?" };
 
 const ReceiveForm = () => {
   const [items, setItems] = useState([]);
   const [item, setItem] = useState(null);
-  const [title, setTitle] = useState(fake_title);
   const [selected, setSelected] = useState(null);
 
-  const { register, handleSubmit } = useForm({
-    defaultValues: title,
-  });
+  const { register, handleSubmit } = useForm({});
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,
@@ -58,6 +55,21 @@ const ReceiveForm = () => {
       draggable: true,
       progress: undefined,
     });
+
+  // upload file
+  const handleOpenWidget = (index) => {
+    var myWidget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: "images-devplus-dp03",
+        uploadPreset: "e4zymksz",
+      },
+      (error, result) => {
+        if (!error && result && result.event === "success") {
+        }
+      }
+    );
+    myWidget.open();
+  };
 
   const [open, setOpen] = useState(false);
   const handleOpen = (index) => {
@@ -90,9 +102,6 @@ const ReceiveForm = () => {
       return setSelected(null);
     }
     setSelected(i);
-  };
-  const onSubmit = (dataSubmit) => {
-    setTitle(dataSubmit);
   };
 
   const addItem = async (submitItem) => {
@@ -183,19 +192,30 @@ const ReceiveForm = () => {
         <Box sx={style}>
           {item ? (
             <form onSubmit={handleSubmitItemEdit(editItem)}>
-              <label>Image url</label>
-              <input {...registerItemEdit("img")} placeholder="Image url" />
               <label>Title</label>
               <input {...registerItemEdit("title")} placeholder="Item title" />
               <label>Detail</label>
               <input {...registerItemEdit("detail")} placeholder="Detail" />
+              <label>Image</label>
+              <div className="re-edit-img">
+                <TbEdit
+                  className="re-icon-edit"
+                  onClick={() => handleOpenWidget()}
+                />
+                <img src={item.img}></img>
+              </div>
               <input type="submit" value="Edit item" />
             </form>
           ) : (
             <form onSubmit={handleSubmitItem(addItem)}>
-              <input {...registerItem("img")} placeholder="Image url" />
+              <label>Title</label>
               <input {...registerItem("title")} placeholder="Item title" />
+              <label>Detail</label>
               <input {...registerItem("detail")} placeholder="Detail" />
+              <div className="rc-add-img" onClick={() => handleOpenWidget()}>
+                <GoPlus className="rc-icon-add" />
+              </div>
+              {/* <input {...registerItem("img")} placeholder="Image url" /> */}
               <input type="submit" value="Add item" />
             </form>
           )}
@@ -221,31 +241,6 @@ const ReceiveForm = () => {
         </DialogActions>
       </Dialog>
       <div className="receive-content">
-        <div className="receive-title">
-          <div className="receive-title-header">
-            <div className="receive-title-item">
-              Title:<p>{title.title}</p>
-            </div>
-
-            <div className="receive-icons">
-              <TbEdit style={{ color: "white" }} />
-              <TbEdit className="receive-icon up" onClick={() => toggle(1)} />
-            </div>
-          </div>
-          <div
-            className={
-              selected === 1
-                ? `receive-title-form active`
-                : "receive-title-form"
-            }
-          >
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <input {...register("title")} placeholder="Title component" />
-              <input type="submit" value="submit" />
-            </form>
-          </div>
-        </div>
-
         <div className={selected === 3 ? `items-wrap active` : "items-wrap"}>
           <div className="receive-item-content">
             <p className="rc-content-col">Title</p>
@@ -261,7 +256,11 @@ const ReceiveForm = () => {
                   <div className={"rc-item-header"}>
                     <div className="rc-item-col">{item.title}</div>
                     <p className="rc-item-col">{item.detail}</p>
-                    <p className="rc-item-col">{item.img}</p>
+                    <p className="rc-item-col">
+                      <div className="rc-backrout-img">
+                        <img src={item.img}></img>
+                      </div>
+                    </p>
                     <div className="receive-icons">
                       <TbEdit
                         className="receive-icon up"

@@ -17,7 +17,7 @@ import FormAdmission from "../../Component/FormAdmission/FormAdmission";
 import FormCampus from "../../Component/FormCampus/FormCampus";
 import FormAbout from "../../Component/FormAbout/FormAbout";
 import FormBanner from "../../Component/FormBanner/FormBanner";
-import FormSideBar from "../../Component/FormSideBar/Formsidebar";
+import FormSideBar from "../../Component/FormSidebar/Formsidebar";
 import FormReview from "../../Component/FormReview/FormReview";
 
 const Admin = () => {

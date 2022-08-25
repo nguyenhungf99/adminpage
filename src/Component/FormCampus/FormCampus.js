@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./FormCampus.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
+import { GoPlus } from "react-icons/go";
 import { MdOutlineDelete } from "react-icons/md";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -24,9 +25,6 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-const fake_content = {
-  title: "Our main campus",
-};
 const fake_road_items = [
   {
     detail: "One plus (+) Programing foundation",
@@ -45,12 +43,24 @@ const fake_road_items = [
 const FormCampus = () => {
   const [items, setItems] = useState([]);
   const [item, setItem] = useState(null);
-  const [title, setTitle] = useState(fake_content);
   const [selected, setSelected] = useState(null);
 
-  const { register, handleSubmit, setValue } = useForm({
-    defaultValues: title,
-  });
+  // Upload widget
+  const handleOpenWidget = (index) => {
+    var myWidget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: "images-devplus-dp03",
+        uploadPreset: "e4zymksz",
+      },
+      (error, result) => {
+        if (!error && result && result.event === "success") {
+        }
+      }
+    );
+    myWidget.open();
+  };
+
+  const { register, handleSubmit, setValue } = useForm({});
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,
@@ -94,10 +104,6 @@ const FormCampus = () => {
     }
     setSelected(i);
   };
-  const onSubmit = (dataSubmit) => {
-    setTitle(dataSubmit);
-  };
-
   const addItem = async (submitItem) => {
     // try {
     //   const response = await axios.post(
@@ -149,7 +155,6 @@ const FormCampus = () => {
 
   const getAllAbout = async () => {
     setItems(fake_road_items);
-    setTitle(fake_content);
     // try {
     //   const response = await axios.get(
     //     "https://api-devplus.herokuapp.com/api/receive"
@@ -185,13 +190,29 @@ const FormCampus = () => {
             <form onSubmit={handleSubmitItemEdit(editItem)}>
               <label>Title</label>
               <input {...registerItemEdit("detail")} placeholder="detail" />
-              <input {...registerItemEdit("img")} placeholder="url image" />
+              <label>Title</label>
+              <div className="campus-edit-img">
+                <TbEdit
+                  className="campus-icon-edit"
+                  onClick={() => handleOpenWidget()}
+                />
+                <img src={item.img}></img>
+              </div>
               <input type="submit" value="Edit Item" />
             </form>
           ) : (
             <form onSubmit={handleSubmitItem(addItem)}>
+              <label>Title</label>
               <input {...registerItem("detail")} placeholder="detail" />
-              <input {...registerItem("img")} placeholder="url image" />
+              <label className="campus-label">Image</label>
+              <div
+                className="campus-add-img"
+                onClick={() => handleOpenWidget()}
+              >
+                <GoPlus className="cp-icon-add" />
+              </div>
+
+              {/* <input {...registerItem("img")} placeholder="url image" /> */}
               <input type="submit" value="Add Item" />
             </form>
           )}
@@ -217,36 +238,14 @@ const FormCampus = () => {
         </DialogActions>
       </Dialog>
       <div className="campus-content">
-        <div className="campus-title">
-          <div className="campus-title-header">
-            <div className="campus-title-item">
-              Title: <p>{title.title}</p>
-            </div>
-            <div className="campus-icons-down">
-              <TbEdit className="campus-icon-down" onClick={() => toggle(1)} />
-            </div>
-          </div>
-          <div
-            className={
-              selected === 1 ? `campus-title-form active` : "campus-title-form"
-            }
-          >
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <label>Title</label>
-              <input {...register("title")} placeholder="Title component" />
-              <input type="submit" value="submit" />
-            </form>
-          </div>
-        </div>
-
         <div
           className={
             selected === 3 ? `campus-items-wrap active` : "campus-items-wrap"
           }
         >
           <div className="campus-item-content">
-            <p className="campus-content-col">Detail </p>
-            <p className="campus-content-col">Url Image </p>
+            <p className="campus-content-col col2">Image </p>
+            <p className="campus-content-col ">Detail </p>
             <div className="campus-content-action" onClick={handleOpen}>
               Add new
             </div>
@@ -255,8 +254,10 @@ const FormCampus = () => {
             ? items.map((item, i) => (
                 <div className="campus-item" key={i}>
                   <div className={"campus-item-header"}>
+                    <div className="campus-item-col item-col1">
+                      <img src={item.img}></img>
+                    </div>
                     <div className="campus-item-col">{item.detail}</div>
-                    <div className="campus-item-col">{item.img}</div>
                     <div className="campus-icons">
                       <TbEdit
                         className="campus-icon up"

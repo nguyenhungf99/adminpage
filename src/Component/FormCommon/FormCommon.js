@@ -25,7 +25,6 @@ const style = {
   p: 4,
 };
 const fake_content = {
-  title: "Some common concerns",
   video: "https://youtu.be/mUjhiT0zSKI",
 };
 const fake_road_items = [
@@ -229,7 +228,6 @@ const FormCommon = () => {
         <div className="common-title">
           <div className="common-title-header">
             <div className="common-title-item">
-              Title: <p>{title.title}</p>
               Video url: <p>{title.video}</p>
             </div>
             <div className="common-icons-down">
@@ -242,9 +240,6 @@ const FormCommon = () => {
             }
           >
             <form onSubmit={handleSubmit(onSubmit)}>
-              <label>Title</label>
-              <input {...register("title")} placeholder="Title component" />
-              <label>Video</label>
               <input {...register("video")} placeholder="Title component" />
               <input type="submit" value="submit" />
             </form>

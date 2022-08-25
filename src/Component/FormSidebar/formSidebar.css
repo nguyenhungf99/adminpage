@@ -123,7 +123,6 @@
 .fsidebar-items-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
 }
 .fsidebar-items-add {
   width: 100px;
@@ -136,6 +135,7 @@
   font-size: 30px;
   color: #2c79d2;
   cursor: pointer;
+  margin: 5px;
 }
 
 .fsidebar-items-add:hover {
@@ -144,11 +144,10 @@
 }
 .fsidebar-items-wrap {
   border: 1px solid gray;
-  min-width: 900px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding: 10px 10px;
+  padding: 10px;
 }
 .fsidebar-item-header {
   display: flex;
@@ -164,7 +163,7 @@
   border: #111111 solid 1px;
   box-shadow: 0 10px 10px 0 rgb(0 0 0 / 8%);
   border-radius: 5px;
-  margin-bottom: 10px;
+  margin: 5px;
 }
 .fsidebar-item-header img {
   height: 100px;

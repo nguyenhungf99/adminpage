@@ -109,7 +109,7 @@ const FormReview = () => {
     console.log(submitItem);
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/review/create",
+        "https://dev-page-server.herokuapp.com/api/admin/review/create",
         submitItem
       );
       if (response.data) {
@@ -129,7 +129,7 @@ const FormReview = () => {
   const editItem = async (submitItem) => {
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/admin/review/edit/${item._id}`,
+        `https://dev-page-server.herokuapp.com/api/admin/review/edit/${item._id}`,
         submitItem
       );
       if (response.data) {
@@ -147,7 +147,7 @@ const FormReview = () => {
   const deleteItem = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:8000/api/admin/review/delete/${item._id}`
+        `https://dev-page-server.herokuapp.com/api/admin/review/delete/${item._id}`
       );
       if (response.data) {
         getAllAbout();
@@ -163,7 +163,7 @@ const FormReview = () => {
   const getAllAbout = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/review/infoAll"
+        "https://dev-page-server.herokuapp.com/api/admin/review/infoAll"
       );
       if (response.data) {
         setItems(response.data);

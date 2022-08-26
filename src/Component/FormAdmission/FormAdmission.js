@@ -55,7 +55,7 @@ const FormAdmission = () => {
   const postApi = async (submit, alert) => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/admission/edit",
+        "https://dev-page-server.herokuapp.com/api/admin/admission/edit",
         submit
       );
       if (response.data) {
@@ -65,13 +65,12 @@ const FormAdmission = () => {
     } catch (error) {
       console.log(error);
     }
-    toggle(0);
   };
 
   const getAllAbout = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/admission/info/"
+        "https://dev-page-server.herokuapp.com/api/admin/admission/info/"
       );
       if (response.data) {
         setData(response.data);

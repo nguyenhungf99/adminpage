@@ -114,7 +114,7 @@ const FormAbout = () => {
   const postApi = async (submit, alert) => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/about/edit",
+        "https://dev-page-server.herokuapp.com/api/admin/about/edit",
         submit
       );
       if (response.data) {
@@ -133,7 +133,7 @@ const FormAbout = () => {
   const getAllAbout = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/about/info/"
+        "https://dev-page-server.herokuapp.com/api/admin/about/info/"
       );
       if (response.data) {
         setData(response.data);

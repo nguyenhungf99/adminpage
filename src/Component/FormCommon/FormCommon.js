@@ -12,7 +12,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
-
+import { toast } from "react-toastify";
 const style = {
   position: "absolute",
   top: "50%",
@@ -24,41 +24,24 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-const fake_content = {
-  video: "https://youtu.be/mUjhiT0zSKI",
-};
-const fake_road_items = [
-  {
-    content: "Do i need  to be fulltime during the campus",
-    detail:
-      "Yes, it’s mandatory. Fulltime as well as full commitment in order to obtain the best achievement.",
-  },
-  {
-    content: "Do i need  to be fulltime during the campus",
-    detail:
-      "Yes, it’s kind of a scholarship. But, you need to pass our challenge through test and interview round.",
-  },
-  {
-    content: "Do i need  to be fulltime during the campus",
-    detail:
-      "The first plus (+) course is designed to students who would like to join the OJT (on-job-train) programme. Next level, the second plus (++) course will suitable for one who got the first plus or fresher, who would like to be trained in order to ready to onboard the real projects. The third plus (+++) course is intended to the alumni of the second plus degree or junior who would like to reach a specific tech-stack: AI, Blockchain, Devops...",
-  },
-  {
-    content: "Do i need  to be fulltime during the campus",
-    detail:
-      "Yes, it’s could be a good job. Once you get the second plus (++) you will ready to onboard the projects of our partners, the most highly recommended places to work.",
-  },
-];
 
 const FormCommon = () => {
-  const [items, setItems] = useState([]);
+  //toastifi setting
+  const notify = (i, time) =>
+    toast.info(i, {
+      position: "top-right",
+      autoClose: time,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
   const [item, setItem] = useState(null);
-  const [title, setTitle] = useState(fake_content);
+  const [data, setData] = useState({});
   const [selected, setSelected] = useState(null);
 
-  const { register, handleSubmit, setValue } = useForm({
-    defaultValues: title,
-  });
+  const { register, handleSubmit, setValue } = useForm({});
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,
@@ -73,7 +56,7 @@ const FormCommon = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = (index) => {
     if (Number.isInteger(index)) {
-      setItem(items.at(index));
+      setItem(data.concerns.at(index));
     }
     setOpen(true);
   };
@@ -85,7 +68,7 @@ const FormCommon = () => {
   const [openMess, setOpenMess] = useState(false);
   const handleOpenMess = (index) => {
     if (Number.isInteger(index)) {
-      setItem(items.at(index));
+      setItem(data.concerns.at(index));
       setOpenMess(true);
     }
   };
@@ -103,75 +86,99 @@ const FormCommon = () => {
     setSelected(i);
   };
   const onSubmit = (dataSubmit) => {
-    setTitle(dataSubmit);
+    let dataTemp = { ...data };
+    dataTemp.video = dataSubmit.video;
+    dataTemp.title = dataSubmit.title;
+    postApi(dataTemp);
+  };
+  const postApi = async (submit) => {
+    try {
+      const response = await axios.post(
+        "https://dev-page-server.herokuapp.com/api/admin/common/edit",
+        submit
+      );
+      if (response.data) {
+        getAllAbout();
+        notify("Update succes!", 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    toggle();
   };
 
   const addItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.post(
-    //     "https://api-devplus.herokuapp.com/api/receive",
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.put(
+        "https://dev-page-server.herokuapp.com/api/admin/common/addConcern/",
+        submitItem
+      );
+      if (response.data) {
+        getAllAbout();
+        notify("Add item success!", 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
     resetFieldItem("content");
     resetFieldItem("detail");
-    resetFieldItem("title");
     setOpen(false);
   };
   const editItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.put(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`,
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.put(
+        `https://dev-page-server.herokuapp.com/api/admin/common/editConcern/${item._id}`,
+        submitItem
+      );
+      if (response.data) {
+        getAllAbout();
+        notify("Edit item succes!", 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
     setItem(null);
     setOpen(false);
   };
   const deleteItem = async () => {
-    // try {
-    //   const response = await axios.delete(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.put(
+        `https://dev-page-server.herokuapp.com/api/admin/common/delete/${item._id}`
+      );
+      if (response.data) {
+        getAllAbout();
+        notify("Delete succes!", 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
     setItem(null);
     setOpen(false);
   };
 
   const getAllAbout = async () => {
-    setItems(fake_road_items);
-    setTitle(fake_content);
-    // try {
-    //   const response = await axios.get(
-    //     "https://api-devplus.herokuapp.com/api/receive"
-    //   );
-    //   if (response.data) {
-    //     setItems(response.data);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.get(
+        "https://dev-page-server.herokuapp.com/api/admin/common/infoAll/"
+      );
+      if (response.data) {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   useEffect(() => {
     getAllAbout();
   }, []);
+  useEffect(() => {
+    if (data !== {}) {
+      setValue("title", data.title);
+      setValue("video", data.video);
+    }
+  }, [data]);
   useEffect(() => {
     if (item) {
       setValueItemEdit("content", item.content);
@@ -198,8 +205,8 @@ const FormCommon = () => {
             </form>
           ) : (
             <form onSubmit={handleSubmitItem(addItem)}>
-              <input {...registerItem("content")} placeholder="content" />
-              <input {...registerItem("detail")} placeholder="detail" />
+              <input {...registerItem("content")} placeholder="content item" />
+              <textarea {...registerItem("detail")} placeholder="detail item" />
               <input type="submit" value="Add Item" />
             </form>
           )}
@@ -216,7 +223,7 @@ const FormCommon = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Do you want delet this item?
+            Do you want delete this item?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -228,7 +235,10 @@ const FormCommon = () => {
         <div className="common-title">
           <div className="common-title-header">
             <div className="common-title-item">
-              Video url: <p>{title.video}</p>
+              Title: <p>{data.title}</p>
+            </div>
+            <div className="common-title-item">
+              Video url: <p>{data.video}</p>
             </div>
             <div className="common-icons-down">
               <TbEdit className="common-icon-down" onClick={() => toggle(1)} />
@@ -240,7 +250,8 @@ const FormCommon = () => {
             }
           >
             <form onSubmit={handleSubmit(onSubmit)}>
-              <input {...register("video")} placeholder="Title component" />
+              <input {...register("title")} placeholder="Title component" />
+              <input {...register("video")} placeholder="Video component" />
               <input type="submit" value="submit" />
             </form>
           </div>
@@ -258,8 +269,8 @@ const FormCommon = () => {
               Add new
             </div>
           </div>
-          {Array.isArray(items)
-            ? items.map((item, i) => (
+          {Array.isArray(data.concerns)
+            ? data.concerns.map((item, i) => (
                 <div className="common-item" key={i}>
                   <div className={"common-item-header"}>
                     <div className="common-item-col">{item.content}</div>

@@ -102,7 +102,7 @@ const FormSideBar = () => {
   const postApi = async (submit, alert) => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/sidebar/edit",
+        "https://dev-page-server.herokuapp.com/api/admin/sidebar/edit",
         submit
       );
       if (response.data) {
@@ -119,7 +119,7 @@ const FormSideBar = () => {
   const getAllAbout = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/admin/sidebar/info/"
+        "https://dev-page-server.herokuapp.com/api/admin/sidebar/info/"
       );
       if (response.data) {
         setData(response.data);

@@ -29,10 +29,23 @@ const style = {
 };
 
 const ReceiveForm = () => {
+  //toastifi setting
+  const notify = (i, time) =>
+    toast.info(i, {
+      position: "top-right",
+      autoClose: time,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
   const [items, setItems] = useState([]);
   const [item, setItem] = useState(null);
-  const [selected, setSelected] = useState(null);
+  const [imageSelected, setImageSelected] = useState();
 
+  // form setup
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,
@@ -42,21 +55,11 @@ const ReceiveForm = () => {
     register: registerItem,
     handleSubmit: handleSubmitItem,
     resetField: resetFieldItem,
+    setValue: setValueItem,
   } = useForm();
 
-  const notify = (i) =>
-    toast.info(i, {
-      position: "top-right",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-
   // upload file
-  const handleOpenWidget = (index) => {
+  const handleOpenWidget = () => {
     var myWidget = window.cloudinary.createUploadWidget(
       {
         cloudName: "images-devplus-dp03",
@@ -64,6 +67,8 @@ const ReceiveForm = () => {
       },
       (error, result) => {
         if (!error && result && result.event === "success") {
+          setImageSelected(result.info.url);
+          setValueItem("image", result.info.url);
         }
       }
     );
@@ -74,12 +79,17 @@ const ReceiveForm = () => {
   const handleOpen = (index) => {
     if (Number.isInteger(index)) {
       setItem(items.at(index));
+      setImageSelected(items.at(index).image);
     }
     setOpen(true);
   };
   const handleClose = () => {
     setItem(null);
+    setImageSelected(null);
     setOpen(false);
+    resetFieldItem("image");
+    resetFieldItem("detail");
+    resetFieldItem("title");
   };
 
   const [openMess, setOpenMess] = useState(false);
@@ -96,69 +106,64 @@ const ReceiveForm = () => {
     setOpenMess(false);
   };
 
-  const toggle = (i) => {
-    if (selected === i) {
-      return setSelected(null);
-    }
-    setSelected(i);
-  };
-
   const addItem = async (submitItem) => {
+    console.log(submitItem);
     try {
       const response = await axios.post(
-        "https://api-devplus.herokuapp.com/api/receive",
+        "https://dev-page-server.herokuapp.com/api/admin/receive/create",
         submitItem
       );
       if (response.data) {
-        getAllReceive();
-        notify("Item update!");
+        getAllAbout();
+        notify("Add item success!", 1000);
       }
     } catch (error) {
       console.log(error);
     }
-    resetFieldItem("img");
+    resetFieldItem("image");
     resetFieldItem("detail");
     resetFieldItem("title");
+    setImageSelected(null);
     setOpen(false);
   };
   const editItem = async (submitItem) => {
     try {
       const response = await axios.put(
-        `https://api-devplus.herokuapp.com/api/receive/${item.id}`,
+        `https://dev-page-server.herokuapp.com/api/admin/receive/edit/${item._id}`,
         submitItem
       );
       if (response.data) {
-        getAllReceive();
-        notify("Edit success!");
+        getAllAbout();
+        notify("update success!", 1000);
       }
     } catch (error) {
       console.log(error);
     }
 
     setItem(null);
+    setImageSelected(null);
     setOpen(false);
   };
   const deleteItem = async () => {
     try {
       const response = await axios.delete(
-        `https://api-devplus.herokuapp.com/api/receive/${item.id}`
+        `https://dev-page-server.herokuapp.com/api/admin/receive/delete/${item._id}`
       );
       if (response.data) {
-        getAllReceive();
-        notify("Delete success!");
+        getAllAbout();
+        notify("Delete success!", 1000);
       }
     } catch (error) {
       console.log(error);
     }
-
     setItem(null);
     setOpen(false);
   };
-  const getAllReceive = async () => {
-    console.log("re");
+
+  const getAllAbout = async () => {
     try {
       const response = await axios.get(
-        "https://api-devplus.herokuapp.com/api/receive"
+        "https://dev-page-server.herokuapp.com/api/admin/receive/infoAll"
       );
       if (response.data) {
         setItems(response.data);
@@ -167,17 +172,22 @@ const ReceiveForm = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
-    getAllReceive();
+    getAllAbout();
   }, []);
+
   useEffect(() => {
     if (item) {
-      setValueItemEdit("img", item.img);
-      setValueItemEdit("detail", item.detail);
       setValueItemEdit("title", item.title);
-      console.log(`https://api-devplus.herokuapp.com/api/receive/${item.id}`);
+      setValueItemEdit("detail", item.detail);
     }
   }, [item]);
+  useEffect(() => {
+    if (imageSelected) {
+      setValueItemEdit("image", imageSelected);
+    }
+  }, [imageSelected]);
 
   return (
     <div className="receive-form">
@@ -188,7 +198,7 @@ const ReceiveForm = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box className="receive-box-modal" sx={style}>
           {item ? (
             <form onSubmit={handleSubmitItemEdit(editItem)}>
               <label>Title</label>
@@ -196,12 +206,21 @@ const ReceiveForm = () => {
               <label>Detail</label>
               <input {...registerItemEdit("detail")} placeholder="Detail" />
               <label>Image</label>
-              <div className="re-edit-img">
-                <TbEdit
-                  className="re-icon-edit"
-                  onClick={() => handleOpenWidget()}
-                />
-                <img src={item.img}></img>
+              <input
+                style={{ display: "none" }}
+                {...registerItemEdit("image")}
+                placeholder="image"
+              />
+              <div
+                className="rc-edit-img"
+                style={
+                  imageSelected
+                    ? { background: `url(${imageSelected}) center/cover` }
+                    : { background: `url(${item.image}) center/cover` }
+                }
+                onClick={() => handleOpenWidget()}
+              >
+                <TbEdit className="rc-icon-add" />
               </div>
               <input type="submit" value="Edit item" />
             </form>
@@ -211,10 +230,23 @@ const ReceiveForm = () => {
               <input {...registerItem("title")} placeholder="Item title" />
               <label>Detail</label>
               <input {...registerItem("detail")} placeholder="Detail" />
-              <div className="rc-add-img" onClick={() => handleOpenWidget()}>
-                <GoPlus className="rc-icon-add" />
+              <label>Image</label>
+              <input
+                style={{ display: "none" }}
+                {...registerItem("image")}
+                placeholder="image"
+              />
+              <div
+                className={imageSelected ? "rc-edit-img" : "rc-add-img"}
+                style={{ background: `url(${imageSelected}) center/cover` }}
+                onClick={() => handleOpenWidget()}
+              >
+                {imageSelected ? (
+                  <TbEdit className="rc-icon-add" />
+                ) : (
+                  <GoPlus className="rc-icon-add" />
+                )}
               </div>
-              {/* <input {...registerItem("img")} placeholder="Image url" /> */}
               <input type="submit" value="Add item" />
             </form>
           )}
@@ -240,7 +272,7 @@ const ReceiveForm = () => {
         </DialogActions>
       </Dialog>
       <div className="receive-content">
-        <div className={selected === 3 ? `items-wrap active` : "items-wrap"}>
+        <div className={"items-wrap"}>
           <div className="receive-item-content">
             <p className="rc-content-col">Title</p>
             <p className="rc-content-col">Detail</p>
@@ -257,7 +289,7 @@ const ReceiveForm = () => {
                     <p className="rc-item-col">{item.detail}</p>
                     <p className="rc-item-col">
                       <div className="rc-backrout-img">
-                        <img src={item.img}></img>
+                        <img src={item.image} alt=""></img>
                       </div>
                     </p>
                     <div className="receive-icons">

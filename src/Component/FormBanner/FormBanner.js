@@ -2,20 +2,12 @@ import { useEffect, useState } from "react";
 import "./FormBanner.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
-
-const fake_data = {
-  title:
-    "Devplus Will Support The Early Stage Developers Go The Right Career Path",
-  detail:
-    "Devplus is not a training center, it’s battle campus for you to level up your skillsets and ready to onboard any projects in our “kindest” companies listing",
-  bgImg: "https://devplus.edu.vn/assets/images/devplus/Devplus_missions.png",
-};
+import { toast } from "react-toastify";
+import axios from "axios";
 const FormBanner = () => {
-  const [data, setData] = useState(fake_data);
+  const [data, setData] = useState({});
   const [open, setOpen] = useState(false);
-  const { register, handleSubmit } = useForm({
-    defaultValues: data,
-  });
+  const { register, handleSubmit, setValue } = useForm();
   const handleOpenWidget = () => {
     var myWidget = window.cloudinary.createUploadWidget(
       {
@@ -31,6 +23,17 @@ const FormBanner = () => {
     myWidget.open();
   };
 
+  const notify = (i, time) =>
+    toast.info(i, {
+      position: "top-right",
+      autoClose: time,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
   const toggle = () => {
     setOpen(!open);
   };
@@ -39,17 +42,53 @@ const FormBanner = () => {
     let dataTemp = { ...data };
     dataTemp.title = dataSubmit.title;
     dataTemp.detail = dataSubmit.detail;
-    setData(dataTemp);
+    postApi(dataTemp, "Update text success!");
     toggle();
   };
   const onSubmitBgImg = (url) => {
     let dataTemp = { ...data };
-    dataTemp.bgImg = url;
-    setData(dataTemp);
+    dataTemp.image = url;
+    postApi(dataTemp, "background update!");
+  };
+
+  const postApi = async (submit, alert) => {
+    try {
+      const response = await axios.post(
+        "https://dev-page-server.herokuapp.com/api/admin/banner/edit",
+        submit
+      );
+      if (response.data) {
+        getAllAbout();
+        notify(alert, 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getAllAbout = async () => {
+    try {
+      const response = await axios.get(
+        "https://dev-page-server.herokuapp.com/api/admin/banner/info/"
+      );
+      if (response.data) {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    console.log(data);
+    getAllAbout();
+  }, []);
+
+  //Set form input when get data
+  useEffect(() => {
+    if (data !== {}) {
+      setValue("title", data.title);
+      setValue("detail", data.detail);
+    }
   }, [data]);
 
   return (
@@ -85,7 +124,7 @@ const FormBanner = () => {
           <hr></hr>
           <div className="banner-img-container">
             <div className="banner-img-header">
-              <img src={data.bgImg} alt="st"></img>
+              <img src={data.image} alt="st"></img>
               <div className="banner-icons-img">
                 <TbEdit
                   className="banner-icon-img"

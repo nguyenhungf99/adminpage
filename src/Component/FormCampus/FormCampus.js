@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import "./FormCampus.css";
 import { useForm } from "react-hook-form";
 import { TbEdit } from "react-icons/tb";
-import { GoPlus } from "react-icons/go";
 import { MdOutlineDelete } from "react-icons/md";
+import { GoPlus } from "react-icons/go";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
@@ -13,6 +13,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const style = {
   position: "absolute",
@@ -25,42 +27,25 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-const fake_road_items = [
-  {
-    detail: "One plus (+) Programing foundation",
-    img: "https://devplus.asia/assets/images/devplus/1.png",
-  },
-  {
-    detail: "Two plus (++) Skill up to to get ready",
-    img: "https://devplus.asia/assets/images/devplus/2.png",
-  },
-  {
-    detail: "Three plus (+++) How to become a senior",
-    img: "https://devplus.asia/assets/images/devplus/3.png",
-  },
-];
 
 const FormCampus = () => {
+  //toastifi setting
+  const notify = (i, time) =>
+    toast.info(i, {
+      position: "top-right",
+      autoClose: time,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+
   const [items, setItems] = useState([]);
   const [item, setItem] = useState(null);
-  const [selected, setSelected] = useState(null);
+  const [imageSelected, setImageSelected] = useState();
 
-  // Upload widget
-  const handleOpenWidget = (index) => {
-    var myWidget = window.cloudinary.createUploadWidget(
-      {
-        cloudName: "images-devplus-dp03",
-        uploadPreset: "e4zymksz",
-      },
-      (error, result) => {
-        if (!error && result && result.event === "success") {
-        }
-      }
-    );
-    myWidget.open();
-  };
-
-  const { register, handleSubmit, setValue } = useForm({});
+  // form setup
   const {
     register: registerItemEdit,
     handleSubmit: handleSubmitItemEdit,
@@ -70,18 +55,40 @@ const FormCampus = () => {
     register: registerItem,
     handleSubmit: handleSubmitItem,
     resetField: resetFieldItem,
+    setValue: setValueItem,
   } = useForm();
+
+  // upload file
+  const handleOpenWidget = () => {
+    var myWidget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: "images-devplus-dp03",
+        uploadPreset: "e4zymksz",
+      },
+      (error, result) => {
+        if (!error && result && result.event === "success") {
+          setImageSelected(result.info.url);
+          setValueItem("image", result.info.url);
+        }
+      }
+    );
+    myWidget.open();
+  };
 
   const [open, setOpen] = useState(false);
   const handleOpen = (index) => {
     if (Number.isInteger(index)) {
       setItem(items.at(index));
+      setImageSelected(items.at(index).image);
     }
     setOpen(true);
   };
   const handleClose = () => {
     setItem(null);
+    setImageSelected(null);
     setOpen(false);
+    resetFieldItem("image");
+    resetFieldItem("text");
   };
 
   const [openMess, setOpenMess] = useState(false);
@@ -98,122 +105,142 @@ const FormCampus = () => {
     setOpenMess(false);
   };
 
-  const toggle = (i) => {
-    if (selected === i) {
-      return setSelected(null);
-    }
-    setSelected(i);
-  };
   const addItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.post(
-    //     "https://api-devplus.herokuapp.com/api/receive",
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    resetFieldItem("img");
-    resetFieldItem("detail");
-    resetFieldItem("title");
+    console.log(submitItem);
+    try {
+      const response = await axios.post(
+        "https://dev-page-server.herokuapp.com/api/admin/campus/create",
+        submitItem
+      );
+      if (response.data) {
+        getAllAbout();
+        notify("Add item success!", 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    resetFieldItem("image");
+    resetFieldItem("text");
+    setImageSelected(null);
     setOpen(false);
   };
   const editItem = async (submitItem) => {
-    // try {
-    //   const response = await axios.put(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`,
-    //     submitItem
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.put(
+        `https://dev-page-server.herokuapp.com/api/admin/campus/edit/${item._id}`,
+        submitItem
+      );
+      if (response.data) {
+        getAllAbout();
+        notify("update success!", 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
     setItem(null);
+    setImageSelected(null);
     setOpen(false);
   };
   const deleteItem = async () => {
-    // try {
-    //   const response = await axios.delete(
-    //     `https://api-devplus.herokuapp.com/api/receive/${item.id}`
-    //   );
-    //   if (response.data) {
-    //     getAllAbout();
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
+    try {
+      const response = await axios.delete(
+        `https://dev-page-server.herokuapp.com/api/admin/campus/delete/${item._id}`
+      );
+      if (response.data) {
+        getAllAbout();
+        notify("Delete success!", 1000);
+      }
+    } catch (error) {
+      console.log(error);
+    }
     setItem(null);
     setOpen(false);
   };
 
   const getAllAbout = async () => {
-    setItems(fake_road_items);
-    // try {
-    //   const response = await axios.get(
-    //     "https://api-devplus.herokuapp.com/api/receive"
-    //   );
-    //   if (response.data) {
-    //     setItems(response.data);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const response = await axios.get(
+        "https://dev-page-server.herokuapp.com/api/admin/campus/infoAll"
+      );
+      if (response.data) {
+        setItems(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   useEffect(() => {
     getAllAbout();
   }, []);
+
   useEffect(() => {
     if (item) {
-      setValueItemEdit("img", item.img);
-      setValueItemEdit("detail", item.detail);
-      setValueItemEdit("title", item.title);
+      setValueItemEdit("text", item.text);
     }
   }, [item]);
+  useEffect(() => {
+    if (imageSelected) {
+      setValueItemEdit("image", imageSelected);
+    }
+  }, [imageSelected]);
 
   return (
     <div className="campus-form">
+      <ToastContainer />
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box className="campus-box-modal" sx={style}>
           {item ? (
             <form onSubmit={handleSubmitItemEdit(editItem)}>
               <label>Title</label>
-              <input {...registerItemEdit("detail")} placeholder="detail" />
-              <label>Title</label>
-              <div className="campus-edit-img">
-                <TbEdit
-                  className="campus-icon-edit"
-                  onClick={() => handleOpenWidget()}
-                />
-                <img src={item.img}></img>
+              <input {...registerItemEdit("text")} placeholder="Item title" />
+              <label>Image</label>
+              <input
+                style={{ display: "none" }}
+                {...registerItemEdit("image")}
+                placeholder="image"
+              />
+              <div
+                className="cp-edit-img"
+                style={
+                  imageSelected
+                    ? { background: `url(${imageSelected}) center/cover` }
+                    : { background: `url(${item.image}) center/cover` }
+                }
+                onClick={() => handleOpenWidget()}
+              >
+                <TbEdit className="cp-icon-add" />
               </div>
-              <input type="submit" value="Edit Item" />
+              <input type="submit" value="Edit item" />
             </form>
           ) : (
             <form onSubmit={handleSubmitItem(addItem)}>
               <label>Title</label>
-              <input {...registerItem("detail")} placeholder="detail" />
-              <label className="campus-label">Image</label>
+              <input {...registerItem("text")} placeholder="Item title" />
+              <label>Image</label>
+              <input
+                style={{ display: "none" }}
+                {...registerItem("image")}
+                placeholder="image"
+              />
               <div
-                className="campus-add-img"
+                className={imageSelected ? "cp-edit-img" : "cp-add-img"}
+                style={{ background: `url(${imageSelected}) center/cover` }}
                 onClick={() => handleOpenWidget()}
               >
-                <GoPlus className="cp-icon-add" />
+                {imageSelected ? (
+                  <TbEdit className="cp-icon-add" />
+                ) : (
+                  <GoPlus className="cp-icon-add" />
+                )}
               </div>
-
-              {/* <input {...registerItem("img")} placeholder="url image" /> */}
-              <input type="submit" value="Add Item" />
+              <input type="submit" value="Add item" />
             </form>
           )}
         </Box>
@@ -238,26 +265,24 @@ const FormCampus = () => {
         </DialogActions>
       </Dialog>
       <div className="campus-content">
-        <div
-          className={
-            selected === 3 ? `campus-items-wrap active` : "campus-items-wrap"
-          }
-        >
+        <div className={"items-wrap"}>
           <div className="campus-item-content">
-            <p className="campus-content-col col2">Image </p>
-            <p className="campus-content-col ">Detail </p>
-            <div className="campus-content-action" onClick={handleOpen}>
+            <p className="cp-content-col">Title</p>
+            <p className="cp-content-col i">Image</p>
+            <div className="cp-content-action" onClick={handleOpen}>
               Add new
             </div>
           </div>
           {Array.isArray(items)
             ? items.map((item, i) => (
                 <div className="campus-item" key={i}>
-                  <div className={"campus-item-header"}>
-                    <div className="campus-item-col item-col1">
-                      <img src={item.img}></img>
+                  <div className={"cp-item-header"}>
+                    <div className="cp-item-col">{item.text}</div>
+                    <div className="cp-item-col">
+                      <div className="cp-backrout-img">
+                        <img src={item.image} alt=""></img>
+                      </div>
                     </div>
-                    <div className="campus-item-col">{item.detail}</div>
                     <div className="campus-icons">
                       <TbEdit
                         className="campus-icon up"
